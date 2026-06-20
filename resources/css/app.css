@@ -1,0 +1,422 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   TrashReport Design System — Custom Styles
+   ============================================ */
+
+/* Base Styles */
+@layer base {
+    html {
+        @apply scroll-smooth;
+    }
+
+    body {
+        @apply font-jakarta text-body bg-canvas-soft antialiased;
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply text-ink;
+    }
+
+    /* Selection */
+    ::selection {
+        @apply bg-primary-soft text-primary;
+    }
+}
+
+/* Component Styles */
+@layer components {
+    /* ── Buttons ── */
+    .btn-primary {
+        @apply bg-primary text-white font-jakarta font-medium text-base
+               px-6 py-3 rounded-pill
+               hover:bg-primary-deep
+               transition-all duration-200
+               inline-flex items-center justify-center gap-2
+               focus:outline-none focus:ring-2 focus:ring-primary-soft focus:ring-offset-2;
+    }
+
+    .btn-secondary {
+        @apply bg-canvas text-ink font-jakarta font-medium text-base
+               px-6 py-3 rounded-pill border border-hairline
+               hover:bg-canvas-soft-2
+               transition-all duration-200
+               inline-flex items-center justify-center gap-2
+               focus:outline-none focus:ring-2 focus:ring-primary-soft focus:ring-offset-2;
+    }
+
+    .btn-primary-sm {
+        @apply bg-primary text-white font-jakarta font-medium text-sm
+               px-4 py-2 rounded-pill
+               hover:bg-primary-deep
+               transition-all duration-200
+               inline-flex items-center justify-center gap-2;
+    }
+
+    .btn-secondary-sm {
+        @apply bg-canvas text-ink font-jakarta font-medium text-sm
+               px-4 py-2 rounded-pill border border-hairline
+               hover:bg-canvas-soft-2
+               transition-all duration-200
+               inline-flex items-center justify-center gap-2;
+    }
+
+    .btn-danger {
+        @apply bg-error text-white font-jakarta font-medium text-sm
+               px-4 py-2 rounded-md
+               hover:bg-red-700
+               transition-all duration-200
+               inline-flex items-center justify-center gap-2;
+    }
+
+    .btn-ghost {
+        @apply bg-transparent text-body font-jakarta font-medium text-sm
+               px-4 py-2 rounded-pill
+               hover:bg-canvas-soft-2
+               transition-all duration-200
+               inline-flex items-center justify-center gap-2;
+    }
+
+    /* ── Nav CTA ── */
+    .nav-cta-signup {
+        @apply bg-primary text-white font-jakarta font-medium text-sm
+               px-3 h-8 rounded-md
+               hover:bg-primary-deep
+               transition-colors duration-200
+               inline-flex items-center justify-center;
+    }
+
+    .nav-cta-login {
+        @apply bg-canvas text-ink font-jakarta font-medium text-sm
+               px-3 h-8 rounded-md border border-hairline
+               hover:bg-canvas-soft-2
+               transition-colors duration-200
+               inline-flex items-center justify-center;
+    }
+
+    /* ── Cards ── */
+    .card-marketing {
+        @apply bg-canvas p-6 rounded-lg shadow-card-md;
+    }
+
+    .card-dashboard {
+        @apply bg-canvas p-8 rounded-xl shadow-card-lg;
+    }
+
+    .card-report {
+        @apply bg-canvas p-6 rounded-lg shadow-card-sm;
+    }
+
+    .card-article {
+        @apply bg-canvas rounded-lg shadow-card-sm overflow-hidden;
+    }
+
+    .card-soft {
+        @apply bg-canvas-soft p-6 rounded-lg;
+    }
+
+    /* ── Badges ── */
+    .badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-jakarta font-medium whitespace-nowrap;
+    }
+
+    .badge-pending {
+        @apply badge bg-warning-soft text-warning;
+    }
+
+    .badge-verified, .badge-assigned {
+        @apply badge bg-info-soft text-info;
+    }
+
+    .badge-processing {
+        @apply badge bg-warning-soft text-warning;
+    }
+
+    .badge-completed {
+        @apply badge bg-success-soft text-success;
+    }
+
+    .badge-rejected {
+        @apply badge bg-error-soft text-error;
+    }
+
+    /* ── Priority Badges ── */
+    .priority-low {
+        @apply badge bg-canvas-soft-2 text-mute;
+    }
+
+    .priority-medium {
+        @apply badge bg-info-soft text-info;
+    }
+
+    .priority-high {
+        @apply badge bg-warning-soft text-warning;
+    }
+
+    .priority-urgent {
+        @apply badge bg-error-soft text-error;
+    }
+
+    /* ── Form Inputs ── */
+    .form-input {
+        @apply w-full bg-canvas border border-hairline text-ink text-sm font-jakarta
+               px-3 h-10 rounded-md
+               focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft
+               transition-all duration-200
+               placeholder:text-mute;
+    }
+
+    .form-input-lg {
+        @apply w-full bg-canvas border border-hairline text-ink text-base font-jakarta
+               px-4 h-12 rounded-md
+               focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft
+               transition-all duration-200
+               placeholder:text-mute;
+    }
+
+    .form-textarea {
+        @apply w-full bg-canvas border border-hairline text-ink text-base font-jakarta
+               p-3 rounded-lg min-h-[120px]
+               focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft
+               transition-all duration-200
+               placeholder:text-mute resize-y;
+    }
+
+    .form-select {
+        @apply w-full bg-canvas border border-hairline text-ink text-sm font-jakarta
+               px-3 h-10 rounded-md appearance-none
+               focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft
+               transition-all duration-200
+               bg-no-repeat bg-right;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+
+    .form-label {
+        @apply block text-sm font-jakarta font-medium text-ink mb-2;
+    }
+
+    .form-error {
+        @apply text-xs text-error mt-1 font-jakarta;
+    }
+
+    /* ── Alerts ── */
+    .alert-success {
+        @apply bg-success-soft border-l-4 border-success text-success rounded-lg p-4 font-jakarta;
+    }
+
+    .alert-error {
+        @apply bg-error-soft border-l-4 border-error text-error rounded-lg p-4 font-jakarta;
+    }
+
+    .alert-warning {
+        @apply bg-warning-soft border-l-4 border-warning text-warning rounded-lg p-4 font-jakarta;
+    }
+
+    .alert-info {
+        @apply bg-info-soft border-l-4 border-info text-info rounded-lg p-4 font-jakarta;
+    }
+
+    /* ── Table ── */
+    .data-table {
+        @apply w-full font-jakarta;
+    }
+
+    .data-table thead {
+        @apply bg-canvas-soft-2;
+    }
+
+    .data-table th {
+        @apply text-left text-sm font-medium text-ink px-4 py-3;
+    }
+
+    .data-table td {
+        @apply text-sm text-body px-4 py-3 border-b border-hairline;
+    }
+
+    .data-table tbody tr:hover {
+        @apply bg-canvas-soft;
+    }
+
+    /* ── Nav ── */
+    .nav-link {
+        @apply text-body text-sm font-jakarta px-3 py-2 rounded-full
+               hover:bg-canvas-soft-2
+               transition-colors duration-200;
+    }
+
+    .nav-link.active {
+        @apply text-primary;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar-item {
+        @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-body text-sm font-jakarta
+               hover:bg-canvas-soft-2
+               transition-colors duration-200;
+    }
+
+    .sidebar-item.active {
+        @apply bg-primary-soft text-primary font-medium;
+    }
+
+    /* ── Status Tracker ── */
+    .status-step {
+        @apply flex items-center gap-2;
+    }
+
+    .status-step-circle {
+        @apply w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium;
+    }
+
+    .status-step-circle.completed {
+        @apply bg-primary text-white;
+    }
+
+    .status-step-circle.active {
+        @apply bg-primary text-white ring-4 ring-primary-soft;
+    }
+
+    .status-step-circle.pending {
+        @apply bg-canvas-soft-2 text-mute border border-hairline;
+    }
+
+    .status-step-line {
+        @apply h-0.5 flex-1;
+    }
+
+    .status-step-line.completed {
+        @apply bg-primary;
+    }
+
+    .status-step-line.pending {
+        @apply bg-hairline;
+    }
+}
+
+/* Utility Animations */
+@layer utilities {
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .animate-slide-in-left {
+        animation: slideInLeft 0.4s ease-out forwards;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.3s ease-out forwards;
+    }
+
+    .animate-count-up {
+        animation: countUp 0.8s ease-out forwards;
+    }
+
+    .stagger-1 { animation-delay: 0.1s; }
+    .stagger-2 { animation-delay: 0.2s; }
+    .stagger-3 { animation-delay: 0.3s; }
+    .stagger-4 { animation-delay: 0.4s; }
+    .stagger-5 { animation-delay: 0.5s; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Eco Gradient */
+.eco-gradient {
+    background: linear-gradient(135deg, #16a34a 0%, #4ade80 50%, #bbf7d0 100%);
+}
+
+.eco-gradient-hero {
+    background: radial-gradient(ellipse at 60% 0%, #bbf7d0 0%, #ffffff 70%);
+}
+
+.eco-gradient-subtle {
+    background: radial-gradient(ellipse at 50% -20%, rgba(220, 252, 231, 0.6) 0%, transparent 70%);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f9fafb;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Leaflet map adjustments */
+.leaflet-container {
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* Smooth page transitions */
+.page-transition {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}

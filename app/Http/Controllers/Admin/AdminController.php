@@ -1,0 +1,137 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class AdminController extends Controller
+{
+    public function dashboard()
+    {
+        $totalLaporan = \App\Models\Laporan::count();
+        $perluVerifikasi = \App\Models\Laporan::where('status', 'Menunggu')->count();
+        $petugasAktif = \App\Models\User::where('peran_id', 3)->where('aktif', true)->count();
+        $laporanSelesai = \App\Models\Laporan::where('status', 'Selesai')->count();
+
+        $laporanTerbaru = \App\Models\Laporan::with(['pengguna', 'wilayah'])
+            ->where('status', 'Menunggu')
+            ->latest('dilaporkan_pada')
+            ->take(5)
+            ->get();
+
+        // FR-AD-12 Alarm Prediksi TPS Liar Baru
+        $reportsLast30Days = \App\Models\Laporan::where('dilaporkan_pada', '>=', now()->subDays(30))->get();
+        $tpsLiarAlarms = collect();
+        $processedIds = [];
+
+        foreach ($reportsLast30Days as $report) {
+            if (in_array($report->id, $processedIds)) continue;
+
+            $nearbyCount = 0;
+            $nearbyReports = [];
+
+            foreach ($reportsLast30Days as $otherReport) {
+                $earthRadius = 6371000;
+                $latFrom = deg2rad((float)$report->lintang);
+                $lonFrom = deg2rad((float)$report->bujur);
+                $latTo = deg2rad((float)$otherReport->lintang);
+                $lonTo = deg2rad((float)$otherReport->bujur);
+
+                $latDelta = $latTo - $latFrom;
+                $lonDelta = $lonTo - $lonFrom;
+
+                $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+                $distance = $angle * $earthRadius;
+
+                if ($distance <= 50) {
+                    $nearbyCount++;
+                    $nearbyReports[] = $otherReport;
+                }
+            }
+
+            // Jika > 3 kali dalam sebulan (berarti >= 3 laporan berdekatan)
+            if ($nearbyCount >= 3) {
+                $tpsLiarAlarms->push((object)[
+                    'center_report' => $report,
+                    'count' => $nearbyCount,
+                    'reports' => $nearbyReports
+                ]);
+                
+                // Mark all nearby as processed so we don't duplicate the alarm for the same area
+                foreach ($nearbyReports as $nr) {
+                    $processedIds[] = $nr->id;
+                }
+            }
+        }
+
+        return view('admin.dashboard', compact('totalLaporan', 'perluVerifikasi', 'petugasAktif', 'laporanSelesai', 'laporanTerbaru', 'tpsLiarAlarms'));
+    }
+
+    public function officers(Request $request)
+    {
+        $query = \App\Models\User::with(['wilayah', 'penugasan.laporan.ulasan'])->where('peran_id', 3);
+        
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('kode_pegawai', 'like', '%' . $request->search . '%');
+        }
+        
+        $officers = $query->paginate(15);
+        $wilayahs = \App\Models\Wilayah::all();
+            
+        return view('admin.officers', compact('officers', 'wilayahs'));
+    }
+
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('admin.profile', compact('user'));
+    }
+
+    public function storeOfficer(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:pengguna',
+            'password' => 'required|string|min:8',
+            'telepon' => 'nullable|string|max:20',
+            'wilayah_id' => 'nullable|exists:wilayah,id',
+            'aktif' => 'required|boolean',
+        ]);
+
+        $officer = \App\Models\User::create([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'peran_id' => 3, // Petugas
+            'kode_pegawai' => 'PTG-' . strtoupper(substr(uniqid(), -5)),
+            'telepon' => $request->telepon,
+            'wilayah_id' => $request->wilayah_id,
+            'aktif' => $request->aktif,
+        ]);
+
+        return redirect()->route('admin.officers')->with('success', 'Petugas baru berhasil ditambahkan.');
+    }
+
+    public function updateOfficer(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'telepon' => 'nullable|string|max:20',
+            'wilayah_id' => 'nullable|exists:wilayah,id',
+            'aktif' => 'required|boolean',
+        ]);
+
+        $officer = \App\Models\User::where('peran_id', 3)->findOrFail($id);
+        
+        $officer->update([
+            'nama' => $request->nama,
+            'telepon' => $request->telepon,
+            'wilayah_id' => $request->wilayah_id,
+            'aktif' => $request->aktif,
+        ]);
+
+        return redirect()->route('admin.officers')->with('success', 'Data petugas berhasil diperbarui.');
+    }
+}
