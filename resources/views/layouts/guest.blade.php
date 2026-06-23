@@ -30,15 +30,7 @@
             <div class="flex items-center justify-between h-20">
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group" id="nav-logo">
-                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-lg shadow-primary/20">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 6h18"/>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                            <line x1="10" y1="11" x2="10" y2="17"/>
-                            <line x1="14" y1="11" x2="14" y2="17"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('images/logo.png') }}" alt="TrashReport Logo" class="h-10 w-auto transition-transform group-hover:scale-105" />
                     <span class="text-gray-900 font-bold text-xl tracking-tight">TrashReport</span>
                 </a>
 
@@ -118,11 +110,7 @@
                 {{-- Brand --}}
                 <div>
                     <div class="flex items-center gap-3 mb-6">
-                        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                            </svg>
-                        </div>
+                        <img src="{{ asset('images/logo.png') }}" alt="TrashReport Logo" class="h-10 w-auto" />
                         <span class="text-gray-900 font-bold text-xl tracking-tight">TrashReport</span>
                     </div>
                     <p class="text-sm text-gray-500 leading-relaxed">Sistem pelaporan sampah liar berbasis komunitas untuk lingkungan yang lebih bersih dan sehat.</p>

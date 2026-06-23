@@ -40,11 +40,7 @@
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-60 bg-canvas border-r border-hairline flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
             {{-- Logo --}}
             <div class="flex items-center gap-2.5 px-5 h-16 border-b border-hairline">
-                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                    </svg>
-                </div>
+                <img src="{{ asset('images/logo.png') }}" alt="TrashReport Logo" class="h-8 w-auto" />
                 <span class="text-ink font-semibold text-sm tracking-tight">TrashReport</span>
             </div>
 
