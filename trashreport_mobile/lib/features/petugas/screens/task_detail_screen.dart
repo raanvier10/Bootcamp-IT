@@ -5,7 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/api/api_client.dart';
 
 class TaskDetailScreen extends StatefulWidget {
@@ -35,7 +35,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final laporan = widget.tugas['laporan'] ?? {};
     String status = (laporan['status'] ?? '').toString().toLowerCase();
     if (status == 'dalam perjalanan') _currentStep = 1;
-    if (status == 'sedang dikerjakan' || status == 'sedang dibersihkan') _currentStep = 2;
+    if (status == 'sedang dibersihkan' || status == 'sedang dikerjakan') _currentStep = 2;
     if (status == 'selesai') _currentStep = 3;
   }
 
@@ -58,6 +58,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         setState(() {
           if (status == 'Dalam Perjalanan') _currentStep = 1;
           if (status == 'Sedang Dibersihkan') _currentStep = 2;
+          widget.tugas['laporan']['status'] = status;
         });
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Status diperbarui')));
       }
@@ -89,7 +90,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       );
 
       if (response.statusCode == 200) {
-        setState(() => _currentStep = 3);
+        setState(() {
+          _currentStep = 3;
+          widget.tugas['laporan']['status'] = 'Selesai';
+        });
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tugas Selesai!')));
         Navigator.pop(context, true);
       }
@@ -100,11 +104,26 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     }
   }
 
+  Future<void> _openGoogleMaps(double lat, double lng) async {
+    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tidak dapat membuka Google Maps')));
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    status = status.toLowerCase();
+    if (status == 'selesai') return primaryColor;
+    if (status == 'dalam perjalanan' || status == 'sedang dibersihkan') return const Color(0xFF2563EB);
+    return const Color(0xFFD97706); // ditugaskan/menunggu
+  }
+
   @override
   Widget build(BuildContext context) {
     final laporan = widget.tugas['laporan'] ?? {};
-    final wilayah = laporan['wilayah'] ?? {};
-    final status = (laporan['status'] ?? 'MENUNGGU').toString().toUpperCase();
+    final status = (laporan['status'] ?? 'DITUGASKAN').toString().toUpperCase();
     final isSelesai = status == 'SELESAI';
 
     double lat = double.tryParse(laporan['lintang'].toString()) ?? -6.200000;
@@ -114,27 +133,35 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text('Detail Tugas', style: GoogleFonts.outfit(color: inkColor, fontWeight: FontWeight.bold)),
+        title: Text('Kembali ke Daftar Tugas', style: GoogleFonts.outfit(color: inkColor, fontWeight: FontWeight.bold, fontSize: 16)),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: IconThemeData(color: inkColor),
+        titleSpacing: 0,
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth > 800) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(flex: 1, child: _buildInfoPanel(laporan, wilayah, location)),
-                Expanded(flex: 1, child: _buildStepperPanel(isSelesai)),
-              ],
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 7, child: _buildLeftColumn(laporan, location, status)),
+                  const SizedBox(width: 24),
+                  Expanded(flex: 4, child: _buildRightColumn(isSelesai)),
+                ],
+              ),
             );
           }
           return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoPanel(laporan, wilayah, location),
-                _buildStepperPanel(isSelesai),
+                _buildLeftColumn(laporan, location, status),
+                const SizedBox(height: 16),
+                _buildRightColumn(isSelesai),
               ],
             ),
           );
@@ -143,130 +170,386 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 
-  Widget _buildInfoPanel(dynamic laporan, dynamic wilayah, LatLng location) {
+  Widget _buildLeftColumn(dynamic laporan, LatLng location, String status) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Main Info Card
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: hairlineColor),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Map Area
+              SizedBox(
+                height: 250,
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      initialCenter: location,
+                      initialZoom: 15.0,
+                    ),
+                    children: [
+                      TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: location,
+                            width: 60, height: 60,
+                            child: const Column(
+                              children: [
+                                Icon(Icons.location_on, color: Color(0xFF0D530E), size: 40),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(laporan['kode_laporan'] ?? '-', style: GoogleFonts.outfit(color: muteColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(status).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            status,
+                            style: GoogleFonts.outfit(color: _getStatusColor(status), fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 0.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(laporan['judul'] ?? 'Sampah Liar', style: GoogleFonts.outfit(color: inkColor, fontSize: 24, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    
+                    // Grey Info Box
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9FAFB),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: hairlineColor),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.location_on_outlined, size: 14, color: primaryColor),
+                                        const SizedBox(width: 6),
+                                        Text('ALAMAT / PATOKAN', style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: muteColor)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(laporan['alamat'] ?? 'Titik Koordinat: ${location.latitude}, ${location.longitude}', style: GoogleFonts.outfit(fontSize: 13, color: inkColor, height: 1.4)),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.person_outline, size: 14, color: primaryColor),
+                                        const SizedBox(width: 6),
+                                        Text('PELAPOR', style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: muteColor)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(laporan['pengguna']?['nama'] ?? 'Masyarakat', style: GoogleFonts.outfit(fontSize: 13, color: inkColor)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Icon(Icons.description_outlined, size: 14, color: primaryColor),
+                              const SizedBox(width: 6),
+                              Text('DESKRIPSI LAPORAN', style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: muteColor)),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(laporan['deskripsi'] ?? '-', style: GoogleFonts.outfit(fontSize: 13, color: inkColor, height: 1.4)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Google Maps Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor.withOpacity(0.1),
+                          foregroundColor: primaryColor,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: primaryColor.withOpacity(0.3)),
+                          ),
+                        ),
+                        icon: const Icon(Icons.near_me_outlined),
+                        label: Text('Buka Navigasi Peta (Google Maps)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                        onPressed: () => _openGoogleMaps(location.latitude, location.longitude),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Bukti Foto Card
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: hairlineColor),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Bukti Foto', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: inkColor)),
+              const SizedBox(height: 16),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth > 400;
+                  final content = [
+                    Expanded(
+                      flex: isWide ? 1 : 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('SEBELUM (DARI PELAPOR)', style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: muteColor)),
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              height: 180, width: double.infinity,
+                              color: bgColor,
+                              child: laporan['foto'] != null 
+                                ? Image.network('http://127.0.0.1:8000/storage/' + laporan['foto'], fit: BoxFit.cover, errorBuilder: (_,__,___) => Icon(Icons.image_not_supported, color: muteColor))
+                                : Icon(Icons.image_not_supported, color: muteColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: isWide ? 16 : 0, height: isWide ? 0 : 16),
+                    Expanded(
+                      flex: isWide ? 1 : 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('SESUDAH (HASIL EKSEKUSI)', style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: muteColor)),
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              height: 180, width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: bgColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: hairlineColor, style: BorderStyle.solid),
+                              ),
+                              child: _image != null 
+                                ? Image.file(_image!, fit: BoxFit.cover) 
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.access_time, color: muteColor, size: 32),
+                                      const SizedBox(height: 8),
+                                      Text('Belum ada foto sesudah', style: GoogleFonts.outfit(color: muteColor, fontSize: 12)),
+                                    ],
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ];
+                  
+                  if (isWide) {
+                    return Row(children: content);
+                  } else {
+                    return Column(children: content);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRightColumn(bool isSelesai) {
     return Container(
-      color: Colors.white,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: hairlineColor),
+      ),
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(laporan['judul'] ?? 'Tugas Pembersihan', style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: inkColor)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
-            child: Text(laporan['kode_laporan'] ?? '-', style: GoogleFonts.outfit(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12)),
-          ),
+          Text('Panel Eksekusi', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: inkColor)),
+          const SizedBox(height: 4),
+          Text('Ikuti tahapan di bawah ini sesuai urutan kerja di lapangan.', style: GoogleFonts.outfit(fontSize: 12, color: muteColor)),
           const SizedBox(height: 24),
-          Text('Lokasi', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: inkColor)),
-          const SizedBox(height: 8),
-          Text(laporan['alamat'] ?? '-', style: GoogleFonts.outfit(color: muteColor)),
+          Divider(height: 1, color: hairlineColor),
           const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: SizedBox(
-              height: 200, width: double.infinity,
-              child: FlutterMap(
-                options: MapOptions(
-                  initialCenter: location,
-                  initialZoom: 15.0,
-                ),
-                children: [
-                  TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
-                  MarkerLayer(markers: [Marker(point: location, child: const Icon(Icons.location_on, color: Colors.red, size: 40))]),
-                ],
-              ),
+          
+          Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(primary: primaryColor),
             ),
-          ),
-          const SizedBox(height: 24),
-          Text('Deskripsi', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: inkColor)),
-          const SizedBox(height: 8),
-          Text(laporan['deskripsi'] ?? '-', style: GoogleFonts.outfit(color: muteColor, height: 1.5)),
-          const SizedBox(height: 24),
-          if (laporan['foto'] != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network('http://127.0.0.1:8000/storage/' + laporan['foto'], height: 200, width: double.infinity, fit: BoxFit.cover),
-            )
+            child: Stepper(
+              physics: const NeverScrollableScrollPhysics(),
+              currentStep: _currentStep,
+              controlsBuilder: (context, details) => const SizedBox.shrink(),
+              margin: EdgeInsets.zero,
+              steps: [
+                Step(
+                  title: Text('Berangkat ke Lokasi', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: inkColor)),
+                  subtitle: Text(_currentStep == 0 ? 'Klik ini saat Anda mulai berangkat agar pelapor tahu.' : 'Selesai', style: GoogleFonts.outfit(color: muteColor, fontSize: 11)),
+                  content: _currentStep == 0 
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            minimumSize: const Size(double.infinity, 44),
+                          ),
+                          icon: _isLoading ? const SizedBox.shrink() : const Icon(Icons.near_me, color: Colors.white, size: 18),
+                          label: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text('Mulai Perjalanan', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                          onPressed: _isLoading ? null : () => _updateStatus('Dalam Perjalanan'),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                  isActive: _currentStep >= 0,
+                  state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+                ),
+                Step(
+                  title: Text('Mulai Eksekusi', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: inkColor)),
+                  subtitle: Text(_currentStep == 1 ? 'Klik ini jika Anda sudah mulai bekerja di lokasi.' : (_currentStep < 1 ? 'Menunggu tahap sebelumnya' : 'Selesai'), style: GoogleFonts.outfit(color: muteColor, fontSize: 11)),
+                  content: _currentStep == 1
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            minimumSize: const Size(double.infinity, 44),
+                          ),
+                          icon: _isLoading ? const SizedBox.shrink() : const Icon(Icons.cleaning_services, color: Colors.white, size: 18),
+                          label: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text('Mulai Eksekusi', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                          onPressed: _isLoading ? null : () => _updateStatus('Sedang Dibersihkan'),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                  isActive: _currentStep >= 1,
+                  state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+                ),
+                Step(
+                  title: Text('Penutupan Tugas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: inkColor)),
+                  subtitle: Text(_currentStep < 2 ? 'Form akan terbuka setelah tahap sebelumnya selesai.' : (_currentStep == 3 ? 'Tugas diselesaikan' : 'Ambil foto bukti pekerjaan'), style: GoogleFonts.outfit(color: muteColor, fontSize: 11)),
+                  content: _currentStep == 2
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: _pickImage,
+                              child: Container(
+                                height: 160, width: double.infinity,
+                                decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: hairlineColor), image: _image != null ? DecorationImage(image: FileImage(_image!), fit: BoxFit.cover) : null),
+                                child: _image == null ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.camera_alt, color: muteColor, size: 40), const SizedBox(height: 12), Text('Ambil Foto Bukti Sesudah', style: GoogleFonts.outfit(color: muteColor, fontSize: 13))]) : null,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextField(controller: _keteranganController, style: GoogleFonts.outfit(fontSize: 13), maxLines: 3, decoration: InputDecoration(labelText: 'Keterangan Selesai', labelStyle: GoogleFonts.outfit(fontSize: 13), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8, runSpacing: 8,
+                              children: [
+                                _buildQuickMessageChip('Dibersihkan sepenuhnya'),
+                                _buildQuickMessageChip('Sampah sudah steril'),
+                                _buildQuickMessageChip('Sisa sedikit puing'),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor: primaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(double.infinity, 50)),
+                              onPressed: _isLoading ? null : _submitSelesai,
+                              child: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text('Selesaikan Tugas', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                            )
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                  isActive: _currentStep >= 2,
+                  state: _currentStep > 2 ? StepState.complete : StepState.indexed,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
   }
 
-  Widget _buildStepperPanel(bool isSelesai) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      color: bgColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Status Penugasan', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: inkColor)),
-          const SizedBox(height: 24),
-          Stepper(
-            physics: const NeverScrollableScrollPhysics(),
-            currentStep: _currentStep,
-            controlsBuilder: (context, details) => const SizedBox.shrink(),
-            steps: [
-              Step(
-                title: Text('Berangkat ke Lokasi', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-                content: _currentStep == 0 
-                  ? ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-                      onPressed: _isLoading ? null : () => _updateStatus('Dalam Perjalanan'),
-                      child: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Mulai Perjalanan', style: TextStyle(color: Colors.white)),
-                    )
-                  : const SizedBox.shrink(),
-                isActive: _currentStep >= 0,
-                state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-              ),
-              Step(
-                title: Text('Mulai Eksekusi', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-                content: _currentStep == 1
-                  ? ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-                      onPressed: _isLoading ? null : () => _updateStatus('Sedang Dibersihkan'),
-                      child: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Mulai Pembersihan', style: TextStyle(color: Colors.white)),
-                    )
-                  : const SizedBox.shrink(),
-                isActive: _currentStep >= 1,
-                state: _currentStep > 1 ? StepState.complete : StepState.indexed,
-              ),
-              Step(
-                title: Text('Penutupan Tugas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-                content: _currentStep == 2
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: Container(
-                            height: 150, width: double.infinity,
-                            decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(12), border: Border.all(color: hairlineColor), image: _image != null ? DecorationImage(image: FileImage(_image!), fit: BoxFit.cover) : null),
-                            child: _image == null ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.camera_alt, color: muteColor, size: 40), const SizedBox(height: 8), Text('Ambil Foto Bukti Selesai', style: GoogleFonts.outfit(color: muteColor))]) : null,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(controller: _keteranganController, maxLines: 3, decoration: InputDecoration(labelText: 'Keterangan Selesai', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity, height: 45,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: primaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                            onPressed: _isLoading ? null : _submitSelesai,
-                            child: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Selesaikan Tugas', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                          ),
-                        )
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-                isActive: _currentStep >= 2,
-                state: _currentStep > 2 ? StepState.complete : StepState.indexed,
-              ),
-            ],
-          )
-        ],
-      ),
+  Widget _buildQuickMessageChip(String text) {
+    return ActionChip(
+      label: Text(text, style: GoogleFonts.outfit(fontSize: 11, color: primaryColor, fontWeight: FontWeight.w600)),
+      backgroundColor: primaryColor.withOpacity(0.05),
+      side: BorderSide(color: primaryColor.withOpacity(0.2)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      onPressed: () {
+        setState(() {
+          _keteranganController.text = text;
+        });
+      },
     );
   }
 }

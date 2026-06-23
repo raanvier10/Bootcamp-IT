@@ -8,7 +8,9 @@ import '../services/tugas_service.dart';
 import '../screens/task_detail_screen.dart';
 import '../screens/peta_rute_screen.dart';
 import '../screens/daftar_tugas_screen.dart';
+import '../screens/notifikasi_petugas_screen.dart';
 import '../../profile/profile_screen.dart';
+import '../../../core/api/api_client.dart';
 
 class PetugasDashboard extends StatefulWidget {
   @override
@@ -29,6 +31,9 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     'dikerjakan': 0,
     'selesai': 0,
   };
+
+  int _unreadNotifCount = 0;
+  final ApiClient _apiClient = ApiClient();
 
   // Warna persis Tailwind TrashReport
   final Color primaryColor = const Color(0xFF0D530E);
@@ -58,6 +63,13 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
   void _fetchData() async {
     setState(() => _isLoading = true);
     final result = await _tugasService.fetchTugas();
+    
+    try {
+      final notifResp = await _apiClient.dio.get('/petugas/notifikasi');
+      if (notifResp.statusCode == 200) {
+        _unreadNotifCount = notifResp.data['unread_count'] ?? 0;
+      }
+    } catch (_) {}
     
     int baru = 0;
     int dikerjakan = 0;
@@ -210,7 +222,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
 
                     // Statistik Petugas (Total Selesai di atas, 2 di bawah)
                     Container(
@@ -298,7 +310,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                         _buildStatCard('SEDANG DIPROSES', 'Tugas', _stats['dikerjakan']!, warningColor, Icons.autorenew, false),
                       ],
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
 
                     // Tugas Terbaru
                     Container(
@@ -469,22 +481,24 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
             icon: Stack(
               children: [
                 Icon(Icons.notifications_none, color: inkColor),
-                Positioned(
-                  right: 2,
-                  top: 2,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: errorColor,
-                      shape: BoxShape.circle,
+                if (_unreadNotifCount > 0)
+                  Positioned(
+                    right: 2,
+                    top: 2,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: errorColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notifikasi dalam pengembangan')));
+            onPressed: () async {
+              await Navigator.push(context, MaterialPageRoute(builder: (_) => NotifikasiPetugasScreen()));
+              _fetchData(); // Refresh unread count on return
             },
           ),
           const SizedBox(width: 8),

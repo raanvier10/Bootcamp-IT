@@ -22,20 +22,25 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
   final Color textTertiary = const Color(0xFF999999);
   final Color bgColor = const Color(0xFFF8F9FA);
 
-  // Status mapping to integers for the timeline
-  final List<String> _timelineSteps = [
-    'Menunggu Verifikasi',
-    'Terverifikasi',
-    'Ditugaskan ke Petugas',
-    'Petugas Dalam Perjalanan',
-    'Sedang Dibersihkan',
-    'Selesai Diangkut',
-    'Menunggu Konfirmasi',
-    'Ditutup'
-  ];
+  List<String> _getTimelineSteps(String status) {
+    if (status.toLowerCase().contains('ditolak')) {
+      return ['Menunggu Verifikasi', 'Ditolak'];
+    }
+    return [
+      'Menunggu Verifikasi',
+      'Terverifikasi',
+      'Ditugaskan ke Petugas',
+      'Petugas Dalam Perjalanan',
+      'Sedang Dibersihkan',
+      'Selesai Diangkut',
+      'Menunggu Konfirmasi',
+      'Ditutup'
+    ];
+  }
 
   int _getCurrentStepIndex(String status) {
     String s = status.toLowerCase();
+    if (s.contains('ditolak')) return 1;
     if (s.contains('menunggu verifikasi') || s == 'menunggu') return 0;
     if (s.contains('terverifikasi')) return 1;
     if (s.contains('ditugaskan')) return 2;
@@ -117,7 +122,7 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
           children: [
             _buildHeaderCard(trackingId, status, judul, kategori, wilayah, tanggalLapor, prioritas),
             const SizedBox(height: 16),
-            _buildTimelineCard(status, currentStep),
+            _buildTimelineCard(status, currentStep, _getTimelineSteps(status)),
             const SizedBox(height: 16),
             _buildDeskripsiCard(deskripsi),
             const SizedBox(height: 16),
@@ -176,6 +181,7 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
       child: Text(
         status, 
+        textAlign: TextAlign.center,
         style: GoogleFonts.outfit(color: text, fontSize: 11, fontWeight: FontWeight.bold)
       ),
     );
@@ -187,10 +193,11 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(trackingId, style: GoogleFonts.outfit(color: textSecondary, fontSize: 12, fontWeight: FontWeight.bold)),
-              const SizedBox(width: 8),
-              _buildStatusBadge(status),
+              Flexible(child: _buildStatusBadge(status)),
             ],
           ),
           const SizedBox(height: 12),
@@ -227,28 +234,22 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
     );
   }
 
-  Widget _buildTimelineCard(String currentStatusText, int currentStepIndex) {
+  Widget _buildTimelineCard(String currentStatusText, int currentStepIndex, List<String> timelineSteps) {
     return _buildCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Perjalanan Laporan', style: GoogleFonts.outfit(color: textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
-              _buildStatusBadge('Status: $currentStatusText'),
-            ],
-          ),
+          Text('Perjalanan Laporan', style: GoogleFonts.outfit(color: textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _timelineSteps.length,
+            itemCount: timelineSteps.length,
             itemBuilder: (context, index) {
               bool isPast = index < currentStepIndex;
               bool isCurrent = index == currentStepIndex;
               bool isFuture = index > currentStepIndex;
-              bool isLast = index == _timelineSteps.length - 1;
+              bool isLast = index == timelineSteps.length - 1;
 
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +260,7 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
                       Container(
                         width: 28, height: 28,
                         decoration: BoxDecoration(
-                          color: isPast || isCurrent ? primaryColor : Colors.white,
+                          color: isPast || isCurrent ? (currentStatusText.toLowerCase().contains('ditolak') && isCurrent ? const Color(0xFFDC2626) : primaryColor) : Colors.white,
                           shape: BoxShape.circle,
                           border: isFuture ? Border.all(color: borderDefault, width: 2) : null,
                         ),
@@ -288,7 +289,7 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _timelineSteps[index],
+                            timelineSteps[index],
                             style: GoogleFonts.outfit(
                               color: isFuture ? textSecondary : textPrimary,
                               fontSize: 14,
@@ -300,7 +301,8 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
                               padding: const EdgeInsets.only(top: 2),
                               child: Text('Posisi Saat Ini', style: GoogleFonts.outfit(color: textSecondary, fontSize: 11)),
                             ),
-                          const SizedBox(height: 24), // Spacing for row height to match line
+                          if (!isLast)
+                            const SizedBox(height: 24), // Spacing for row height to match line
                         ],
                       ),
                     ),

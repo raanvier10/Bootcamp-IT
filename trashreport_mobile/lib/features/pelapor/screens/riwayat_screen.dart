@@ -15,7 +15,7 @@ class RiwayatScreen extends StatefulWidget {
 
 class _RiwayatScreenState extends State<RiwayatScreen> {
   String _selectedFilter = 'Semua Laporan';
-  final List<String> _filters = ['Semua Laporan', 'Menunggu', 'Diproses', 'Selesai', 'Ditolak'];
+  final List<String> _filters = ['Semua Laporan', 'Menunggu', 'Sedang Dibersihkan', 'Selesai', 'Ditolak'];
 
   Color _getStatusColor(String status) {
     String s = status.toLowerCase();
@@ -55,7 +55,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
       if (_selectedFilter == 'Semua Laporan') return true;
       String status = r['status'].toString().toLowerCase();
       if (_selectedFilter == 'Menunggu' && (status.contains('menunggu') || status.contains('verifikasi'))) return true;
-      if (_selectedFilter == 'Diproses' && (status.contains('proses') || status.contains('ditugaskan'))) return true;
+      if (_selectedFilter == 'Sedang Dibersihkan' && (status.contains('proses') || status.contains('tugas') || status.contains('jalan') || status.contains('bersih'))) return true;
       if (_selectedFilter == 'Selesai' && (status.contains('selesai') || status.contains('ditutup'))) return true;
       if (_selectedFilter == 'Ditolak' && status.contains('ditolak')) return true;
       return false;

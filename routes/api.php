@@ -51,5 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('petugas')->group(function () {
         Route::get('/tugas', [\App\Http\Controllers\Api\TugasController::class, 'index']);
         Route::post('/tugas/{id}/verifikasi', [\App\Http\Controllers\Api\TugasController::class, 'verifikasi']);
+        
+        Route::get('/notifikasi', [\App\Http\Controllers\Api\NotifikasiController::class, 'index']);
+        Route::post('/notifikasi/{id}/baca', [\App\Http\Controllers\Api\NotifikasiController::class, 'markAsRead']);
     });
 });

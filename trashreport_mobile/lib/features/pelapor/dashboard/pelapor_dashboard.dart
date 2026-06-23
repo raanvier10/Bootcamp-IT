@@ -294,7 +294,7 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
               childAspectRatio: 1.9,
               children: [
                 _buildSmallStatCard('MENUNGGU', _stats['menunggu']!, Icons.access_time_rounded, const Color(0xFFD97706)),
-                _buildSmallStatCard('DIPROSES', _stats['diproses']!, Icons.blur_on, const Color(0xFF2563EB)),
+                _buildSmallStatCard('SEDANG DIBERSIHKAN', _stats['diproses']!, Icons.blur_on, const Color(0xFF2563EB)),
                 _buildSmallStatCard('SELESAI', _stats['selesai']!, Icons.check_circle_outline_rounded, primaryColor),
                 _buildSmallStatCard('DITOLAK', _stats['ditolak']!, Icons.cancel_outlined, const Color(0xFFDC2626)),
               ],
@@ -758,9 +758,11 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
         ),
 
         // RIGHT: Zoom Controls & Location
-        Positioned(
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
           right: 16,
-          bottom: 190,
+          bottom: _selectedMapReport != null ? 190 : 32,
           child: Column(
             children: [
               FloatingActionButton.small(
