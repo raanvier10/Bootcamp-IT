@@ -49,8 +49,8 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2.5">
-                            <img src="{{ $laporan->user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user->name }}" class="w-7 h-7 rounded-full object-cover">
-                            <span class="text-sm font-medium text-body">{{ $laporan->user->name }}</span>
+                            <img src="{{ $laporan->user?->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user?->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user?->name ?? 'User' }}" class="w-7 h-7 rounded-full object-cover">
+                            <span class="text-sm font-medium text-body">{{ $laporan->user?->name ?? 'User' }}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4">
@@ -58,13 +58,13 @@
                             <i data-lucide="map-pin" class="w-4 h-4 text-mute shrink-0 mt-0.5"></i>
                             <div>
                                 <p class="text-sm font-medium text-body line-clamp-1 max-w-[200px]" title="{{ $laporan->alamat }}">{{ $laporan->alamat }}</p>
-                                <p class="text-[11px] text-mute">{{ $laporan->wilayah->nama ?? 'Tidak diketahui' }}</p>
+                                <p class="text-[11px] text-mute">{{ $laporan->wilayah?->nama ?? 'Tidak diketahui' }}</p>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4">
                         <span class="inline-flex px-2 py-1 bg-canvas-soft-2 text-mute text-[11px] font-bold rounded-lg border border-hairline">
-                            {{ $laporan->kategori->nama ?? 'Umum' }}
+                            {{ $laporan->kategori?->nama ?? 'Umum' }}
                         </span>
                     </td>
                     <td class="px-6 py-4">

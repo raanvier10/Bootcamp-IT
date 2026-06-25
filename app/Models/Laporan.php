@@ -126,7 +126,7 @@ class Laporan extends Model
     public function getStatusLabelAttribute(): string { return $this->label_status; }
     public function getStatusBadgeClassAttribute(): string { return $this->kelas_badge_status; }
     public function getPriorityLabelAttribute(): string { return $this->label_prioritas; }
-    public function getUserAttribute() { return $this->user; }
+
     public function getDistrictAttribute() { return $this->wilayah; }
     public function getCategoryAttribute() { return $this->kategori; }
     public function getBeforeImagesAttribute() { return $this->gambarSebelum; }

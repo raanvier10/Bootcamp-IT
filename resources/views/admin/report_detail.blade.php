@@ -114,7 +114,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-ink">{{ $laporan->alamat }}</p>
-                            <p class="text-xs text-mute mt-1">Wilayah: {{ $laporan->wilayah->nama ?? '-' }}</p>
+                            <p class="text-xs text-mute mt-1">Wilayah: {{ $laporan->wilayah?->nama ?? '-' }}</p>
                             <a href="https://maps.google.com/?q={{ $laporan->lintang }},{{ $laporan->bujur }}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-dark mt-2 transition-colors">
                                 Lihat di Google Maps <i data-lucide="external-link" class="w-3 h-3"></i>
                             </a>
@@ -197,15 +197,15 @@
         <div class="bg-canvas rounded-[24px] border border-hairline shadow-card-sm p-5">
             <p class="text-[11px] font-bold text-mute uppercase tracking-widest mb-4">Informasi Pelapor</p>
             <div class="flex items-center gap-3 mb-4">
-                <img src="{{ $laporan->user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user->name }}" class="w-12 h-12 rounded-full object-cover border border-hairline">
+                <img src="{{ $laporan->user?->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user?->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user?->name ?? 'User' }}" class="w-12 h-12 rounded-full object-cover border border-hairline">
                 <div>
-                    <p class="text-sm font-bold text-ink">{{ $laporan->user->name }}</p>
-                    <p class="text-xs text-mute">{{ $laporan->user->email }}</p>
+                    <p class="text-sm font-bold text-ink">{{ $laporan->user?->name ?? 'User' }}</p>
+                    <p class="text-xs text-mute">{{ $laporan->user?->email ?? '-' }}</p>
                 </div>
             </div>
-            @if($laporan->user->telepon)
+            @if($laporan->user?->telepon)
             <div class="flex items-center gap-2 text-sm text-body">
-                <i data-lucide="phone" class="w-4 h-4 text-mute"></i> {{ $laporan->user->telepon }}
+                <i data-lucide="phone" class="w-4 h-4 text-mute"></i> {{ $laporan->user?->telepon }}
             </div>
             @endif
         </div>
@@ -224,7 +224,7 @@
                     </div>
                     <div class="pb-2">
                         <p class="text-sm font-bold text-ink">{{ $riwayat->status }}</p>
-                        <p class="text-[11px] text-mute mt-0.5">{{ $riwayat->created_at->format('d M Y, H:i') }} &bull; Oleh: {{ $riwayat->user->name ?? 'Sistem' }}</p>
+                        <p class="text-[11px] text-mute mt-0.5">{{ $riwayat->created_at->format('d M Y, H:i') }} &bull; Oleh: {{ $riwayat->user?->name ?? 'Sistem' }}</p>
                         @if($riwayat->catatan)
                             <p class="text-xs text-body mt-2 bg-canvas-soft p-2 rounded-lg border border-hairline">{{ $riwayat->catatan }}</p>
                         @endif
