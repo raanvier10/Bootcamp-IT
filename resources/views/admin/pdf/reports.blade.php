@@ -74,11 +74,11 @@
                 <tr>
                     <td>{{ $laporan->kode_laporan }}</td>
                     <td>{{ $laporan->dilaporkan_pada->format('d/m/Y H:i') }}</td>
-                    <td>{{ $laporan->pengguna->nama ?? '-' }}</td>
+                    <td>{{ $laporan->user->name ?? '-' }}</td>
                     <td>{{ $laporan->wilayah->nama ?? 'Umum' }}</td>
                     <td>{{ $laporan->alamat }}</td>
                     <td>{{ $laporan->status }}</td>
-                    <td>{{ $laporan->penugasan->petugas->nama ?? '-' }}</td>
+                    <td>{{ $laporan->petugas->name ?? '-' }}</td>
                 </tr>
             @empty
                 <tr>

@@ -11,10 +11,10 @@ class AdminController extends Controller
     {
         $totalLaporan = \App\Models\Laporan::count();
         $perluVerifikasi = \App\Models\Laporan::where('status', 'Menunggu')->count();
-        $petugasAktif = \App\Models\User::where('peran_id', 3)->where('aktif', true)->count();
+        $petugasAktif = \App\Models\User::where('peran', 'Petugas')->where('aktif', true)->count();
         $laporanSelesai = \App\Models\Laporan::where('status', 'Selesai')->count();
 
-        $laporanTerbaru = \App\Models\Laporan::with(['pengguna', 'wilayah'])
+        $laporanTerbaru = \App\Models\Laporan::with(['user', 'wilayah'])
             ->where('status', 'Menunggu')
             ->latest('dilaporkan_pada')
             ->take(5)
@@ -70,10 +70,10 @@ class AdminController extends Controller
 
     public function officers(Request $request)
     {
-        $query = \App\Models\User::with(['wilayah', 'penugasan.laporan.ulasan'])->where('peran_id', 3);
+        $query = \App\Models\User::with(['wilayah', 'tugas.ulasan'])->where('peran', 'Petugas');
         
         if ($request->filled('search')) {
-            $query->where('nama', 'like', '%' . $request->search . '%')
+            $query->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('kode_pegawai', 'like', '%' . $request->search . '%');
         }
         
@@ -93,7 +93,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:pengguna',
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'telepon' => 'nullable|string|max:20',
             'wilayah_id' => 'nullable|exists:wilayah,id',
@@ -101,10 +101,10 @@ class AdminController extends Controller
         ]);
 
         $officer = \App\Models\User::create([
-            'nama' => $request->nama,
+            'name' => $request->nama,
             'email' => $request->email,
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            'peran_id' => 3, // Petugas
+            'peran' => 'Petugas',
             'kode_pegawai' => 'PTG-' . strtoupper(substr(uniqid(), -5)),
             'telepon' => $request->telepon,
             'wilayah_id' => $request->wilayah_id,
@@ -123,10 +123,10 @@ class AdminController extends Controller
             'aktif' => 'required|boolean',
         ]);
 
-        $officer = \App\Models\User::where('peran_id', 3)->findOrFail($id);
+        $officer = \App\Models\User::where('peran', 'Petugas')->findOrFail($id);
         
         $officer->update([
-            'nama' => $request->nama,
+            'name' => $request->nama,
             'telepon' => $request->telepon,
             'wilayah_id' => $request->wilayah_id,
             'aktif' => $request->aktif,

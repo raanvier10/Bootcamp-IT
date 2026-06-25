@@ -13,8 +13,8 @@
             </a>
             <h2 class="text-xl font-bold text-ink">Kembali ke Daftar Tugas</h2>
         </div>
-        <span class="{{ $tugas->laporan->kelas_badge_status }} px-3 py-1.5 rounded-md font-bold uppercase tracking-wider text-xs shadow-sm">
-            {{ $tugas->laporan->label_status }}
+        <span class="{{ $tugas->kelas_badge_status }} px-3 py-1.5 rounded-md font-bold uppercase tracking-wider text-xs shadow-sm">
+            {{ $tugas->label_status }}
         </span>
     </div>
 
@@ -28,13 +28,13 @@
                 <div class="p-6 relative z-20">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                         <div>
-                            <p class="text-xs font-bold text-mute uppercase tracking-wider mb-1">{{ $tugas->laporan->kode_laporan }}</p>
-                            <h3 class="text-2xl font-black text-ink tracking-tight leading-tight">{{ $tugas->laporan->judul }}</h3>
+                            <p class="text-xs font-bold text-mute uppercase tracking-wider mb-1">{{ $tugas->kode_laporan }}</p>
+                            <h3 class="text-2xl font-black text-ink tracking-tight leading-tight">{{ $tugas->judul }}</h3>
                         </div>
                         <div class="shrink-0 flex items-center gap-2">
-                            @if($tugas->laporan->prioritas == 'Mendesak')
+                            @if($tugas->prioritas == 'Mendesak')
                                 <span class="bg-error text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1"><i data-lucide="flame" class="w-4 h-4"></i> Mendesak</span>
-                            @elseif($tugas->laporan->prioritas == 'Tinggi')
+                            @elseif($tugas->prioritas == 'Tinggi')
                                 <span class="bg-warning text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1"><i data-lucide="flame" class="w-4 h-4"></i> Tinggi</span>
                             @endif
                         </div>
@@ -45,27 +45,27 @@
                             <i data-lucide="map-pin" class="w-5 h-5 text-primary shrink-0 mt-0.5"></i>
                             <div>
                                 <p class="text-[10px] font-bold text-mute uppercase tracking-wider mb-0.5">Alamat / Patokan</p>
-                                <p class="text-sm font-medium text-ink">{{ $tugas->laporan->alamat }}</p>
+                                <p class="text-sm font-medium text-ink">{{ $tugas->alamat }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <i data-lucide="user" class="w-5 h-5 text-primary shrink-0 mt-0.5"></i>
                             <div>
                                 <p class="text-[10px] font-bold text-mute uppercase tracking-wider mb-0.5">Pelapor</p>
-                                <p class="text-sm font-medium text-ink">{{ $tugas->laporan->pengguna->nama }}</p>
+                                <p class="text-sm font-medium text-ink">{{ $tugas->user->name }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3 sm:col-span-2 mt-2">
                             <i data-lucide="file-text" class="w-5 h-5 text-primary shrink-0 mt-0.5"></i>
                             <div>
                                 <p class="text-[10px] font-bold text-mute uppercase tracking-wider mb-0.5">Deskripsi Laporan</p>
-                                <p class="text-sm text-body leading-relaxed">{{ $tugas->laporan->deskripsi }}</p>
+                                <p class="text-sm text-body leading-relaxed">{{ $tugas->deskripsi }}</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center gap-4 mt-2">
-                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ $tugas->laporan->lintang }},{{ $tugas->laporan->bujur }}" target="_blank" class="w-full py-4 flex items-center justify-center gap-2 font-black text-base border-2 border-primary/20 text-primary bg-primary-soft/50 rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm">
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ $tugas->lintang }},{{ $tugas->bujur }}" target="_blank" class="w-full py-4 flex items-center justify-center gap-2 font-black text-base border-2 border-primary/20 text-primary bg-primary-soft/50 rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm">
                             <i data-lucide="navigation" class="w-6 h-6"></i> Buka Navigasi Peta (Google Maps)
                         </a>
                     </div>
@@ -79,9 +79,9 @@
                     {{-- Sebelum --}}
                     <div>
                         <p class="text-xs font-bold text-mute uppercase tracking-wider mb-2">Sebelum (Dari Pelapor)</p>
-                        @if($tugas->laporan->gambarSebelum->count() > 0)
+                        @if($tugas->gambarSebelum->count() > 0)
                             <div class="aspect-[4/3] rounded-xl overflow-hidden bg-canvas-soft border border-hairline shadow-inner">
-                                <img src="{{ asset('storage/' . $tugas->laporan->gambarSebelum->first()->jalur_gambar) }}" alt="Sebelum" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="window.open(this.src, '_blank')">
+                                <img src="{{ asset('storage/' . $tugas->gambarSebelum->first()->jalur_gambar) }}" alt="Sebelum" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="window.open(this.src, '_blank')">
                             </div>
                         @else
                             <div class="aspect-[4/3] rounded-xl bg-canvas-soft border border-hairline border-dashed flex flex-col items-center justify-center text-mute">
@@ -94,9 +94,9 @@
                     {{-- Sesudah --}}
                     <div>
                         <p class="text-xs font-bold text-mute uppercase tracking-wider mb-2">Sesudah (Hasil Eksekusi)</p>
-                        @if($tugas->laporan->gambarSesudah->count() > 0)
+                        @if($tugas->gambarSesudah->count() > 0)
                             <div class="aspect-[4/3] rounded-xl overflow-hidden bg-canvas-soft border border-hairline shadow-inner">
-                                <img src="{{ asset('storage/' . $tugas->laporan->gambarSesudah->first()->jalur_gambar) }}" alt="Sesudah" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="window.open(this.src, '_blank')">
+                                <img src="{{ asset('storage/' . $tugas->gambarSesudah->first()->jalur_gambar) }}" alt="Sesudah" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="window.open(this.src, '_blank')">
                             </div>
                         @else
                             <div class="aspect-[4/3] rounded-xl bg-canvas-soft border border-hairline border-dashed flex flex-col items-center justify-center text-mute">
@@ -122,12 +122,12 @@
                     {{-- Tahap 1: Menuju Lokasi --}}
                     <div class="relative pl-8">
                         <div class="absolute left-3 top-0 bottom-[-24px] w-0.5 bg-hairline"></div>
-                        <div class="absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center {{ in_array($tugas->laporan->status, ['Dalam Perjalanan', 'Sedang Dibersihkan', 'Selesai', 'Ditutup']) ? 'bg-primary text-white ring-4 ring-primary-soft' : 'bg-canvas-soft border-2 border-hairline text-mute' }}">
+                        <div class="absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center {{ in_array($tugas->status, ['Dalam Perjalanan', 'Sedang Dibersihkan', 'Selesai', 'Ditutup']) ? 'bg-primary text-white ring-4 ring-primary-soft' : 'bg-canvas-soft border-2 border-hairline text-mute' }}">
                             <i data-lucide="check" class="w-3.5 h-3.5"></i>
                         </div>
                         
                         <h5 class="text-sm font-bold text-ink mb-1">Berangkat ke Lokasi</h5>
-                        @if($tugas->laporan->status == 'Ditugaskan' || $tugas->laporan->status == 'Terverifikasi')
+                        @if($tugas->status == 'Ditugaskan' || $tugas->status == 'Terverifikasi')
                             <p class="text-xs text-mute mb-3">Klik ini saat Anda mulai berangkat agar pelapor tahu.</p>
                             <button type="submit" name="action" value="menuju_lokasi" class="w-full btn-primary py-3.5 text-base font-black shadow-lg shadow-primary/30 flex items-center justify-center gap-2 rounded-xl">
                                 <i data-lucide="navigation" class="w-5 h-5"></i> Mulai Perjalanan
@@ -140,17 +140,17 @@
                     {{-- Tahap 2: Mulai Pembersihan --}}
                     <div class="relative pl-8">
                         <div class="absolute left-3 top-0 bottom-[-24px] w-0.5 bg-hairline"></div>
-                        <div class="absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center {{ in_array($tugas->laporan->status, ['Sedang Dibersihkan', 'Selesai', 'Ditutup']) ? 'bg-primary text-white ring-4 ring-primary-soft' : 'bg-canvas-soft border-2 border-hairline text-mute' }}">
+                        <div class="absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center {{ in_array($tugas->status, ['Sedang Dibersihkan', 'Selesai', 'Ditutup']) ? 'bg-primary text-white ring-4 ring-primary-soft' : 'bg-canvas-soft border-2 border-hairline text-mute' }}">
                             <i data-lucide="check" class="w-3.5 h-3.5"></i>
                         </div>
                         
                         <h5 class="text-sm font-bold text-ink mb-1">Mulai Eksekusi</h5>
-                        @if($tugas->laporan->status == 'Dalam Perjalanan')
+                        @if($tugas->status == 'Dalam Perjalanan')
                             <p class="text-xs text-mute mb-3">Tiba di lokasi? Tekan ini saat mulai membersihkan sampah.</p>
                             <button type="submit" name="action" value="mulai_pembersihan" class="w-full bg-warning hover:bg-[#d97706] text-white font-black py-3.5 rounded-xl transition-colors shadow-lg shadow-warning/30 flex items-center justify-center gap-2 text-base">
                                 <i data-lucide="loader" class="w-5 h-5"></i> Mulai Pembersihan
                             </button>
-                        @elseif(in_array($tugas->laporan->status, ['Sedang Dibersihkan', 'Selesai', 'Ditutup']))
+                        @elseif(in_array($tugas->status, ['Sedang Dibersihkan', 'Selesai', 'Ditutup']))
                             <p class="text-xs text-primary font-bold mt-1">Selesai ✓</p>
                         @else
                             <p class="text-xs text-mute/50 mt-1">Menunggu tahap sebelumnya</p>
@@ -159,13 +159,13 @@
 
                     {{-- Tahap 3: Selesaikan Tugas --}}
                     <div class="relative pl-8">
-                        <div class="absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center {{ in_array($tugas->laporan->status, ['Selesai', 'Ditutup']) ? 'bg-success text-white ring-4 ring-success-soft' : 'bg-canvas-soft border-2 border-hairline text-mute' }}">
+                        <div class="absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center {{ in_array($tugas->status, ['Selesai', 'Ditutup']) ? 'bg-success text-white ring-4 ring-success-soft' : 'bg-canvas-soft border-2 border-hairline text-mute' }}">
                             <i data-lucide="check" class="w-3.5 h-3.5"></i>
                         </div>
                         
                         <h5 class="text-sm font-bold text-ink mb-2">Penutupan Tugas</h5>
                         
-                        @if($tugas->laporan->status == 'Sedang Dibersihkan')
+                        @if($tugas->status == 'Sedang Dibersihkan')
                             <div class="bg-canvas-soft-2 p-4 rounded-xl border border-hairline mb-4 animate-fade-in space-y-4">
                                 {{-- Input Foto Sesudah (Eco-Cam) --}}
                                 <div>
@@ -213,7 +213,7 @@
                                 <i data-lucide="check-circle" class="w-5 h-5"></i> Tandai Selesai
                             </button>
 
-                        @elseif(in_array($tugas->laporan->status, ['Selesai', 'Ditutup']))
+                        @elseif(in_array($tugas->status, ['Selesai', 'Ditutup']))
                             <div class="mt-3 bg-success-soft border border-success/20 p-4 rounded-xl flex flex-col items-center text-center">
                                 <div class="w-12 h-12 bg-success text-white rounded-full flex items-center justify-center mb-2 shadow-sm">
                                     <i data-lucide="check-circle-2" class="w-6 h-6"></i>
@@ -280,8 +280,8 @@
 <script>
     // Inisialisasi Peta Leaflet
     document.addEventListener('DOMContentLoaded', function() {
-        const lat = {{ $tugas->laporan->lintang }};
-        const lng = {{ $tugas->laporan->bujur }};
+        const lat = {{ $tugas->lintang }};
+        const lng = {{ $tugas->bujur }};
         
         const map = L.map('map-container', {
             zoomControl: false // kita hilangkan default zoom untuk custom
@@ -310,7 +310,7 @@
         });
 
         L.marker([lat, lng], {icon: markerIcon}).addTo(map)
-            .bindPopup("<b class='font-jakarta'>Lokasi Sampah</b><br/>{{ $tugas->laporan->alamat }}").openPopup();
+            .bindPopup("<b class='font-jakarta'>Lokasi Sampah</b><br/>{{ $tugas->alamat }}").openPopup();
     });
 
     // Setup Eco-Cam Variables

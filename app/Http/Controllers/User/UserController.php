@@ -21,8 +21,8 @@ class UserController extends Controller
      */
     public function dashboard()
     {
-        $pengguna = Auth::user();
-        $laporan = $pengguna->laporan();
+        $user = Auth::user();
+        $laporan = $user->laporan();
 
         $stats = [
             'total' => $laporan->count(),
@@ -32,13 +32,13 @@ class UserController extends Controller
             'rejected' => (clone $laporan)->where('status', 'Ditolak')->count(),
         ];
 
-        $recentReports = $pengguna->laporan()
+        $recentReports = $user->laporan()
             ->with(['kategori', 'wilayah'])
             ->latest()
             ->take(5)
             ->get();
 
-        $notifications = $pengguna->notifikasi()
+        $notifications = $user->notifikasi()
             ->latest('dibuat_pada')
             ->take(5)
             ->get();
@@ -75,7 +75,7 @@ class UserController extends Controller
 
         $laporan = Laporan::create([
             'kode_laporan' => Laporan::buatKode(),
-            'pengguna_id'  => Auth::id(),
+            'user_id'      => Auth::id(),
             'wilayah_id'   => $request->district_id,
             'kategori_id'  => $request->category_id,
             'judul'        => $request->title,
@@ -117,8 +117,8 @@ class UserController extends Controller
      */
     public function reportDetail($id)
     {
-        $report = Laporan::where('pengguna_id', Auth::id())
-            ->with(['kategori', 'wilayah', 'gambar', 'riwayatStatus.pengguna', 'penugasan.petugas', 'ulasan'])
+        $report = Laporan::where('user_id', Auth::id())
+            ->with(['kategori', 'wilayah', 'gambar', 'riwayatStatus.user', 'petugas', 'ulasan'])
             ->findOrFail($id);
 
         $statusSteps = [
@@ -140,7 +140,7 @@ class UserController extends Controller
      */
     public function confirmReport(Request $request, $id)
     {
-        $report = Laporan::where('pengguna_id', Auth::id())
+        $report = Laporan::where('user_id', Auth::id())
             ->where('status', 'Menunggu Konfirmasi')
             ->findOrFail($id);
 
@@ -167,11 +167,11 @@ class UserController extends Controller
             'comment' => ['nullable', 'string'],
         ]);
 
-        $laporan = Laporan::where('pengguna_id', Auth::id())->findOrFail($id);
+        $laporan = Laporan::where('user_id', Auth::id())->findOrFail($id);
 
         Ulasan::create([
             'laporan_id'  => $laporan->id,
-            'pengguna_id' => Auth::id(),
+            'user_id'     => Auth::id(),
             'nilai'       => $request->rating,
             'komentar'    => $request->comment,
         ]);
@@ -214,7 +214,7 @@ class UserController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $pengguna = Auth::user();
+        $user = Auth::user();
 
         $request->validate([
             'name'   => ['required', 'string', 'max:100'],
@@ -223,18 +223,18 @@ class UserController extends Controller
         ]);
 
         $data = [
-            'nama'    => $request->name,
+            'name'    => $request->name,
             'telepon' => $request->phone,
         ];
 
         if ($request->hasFile('avatar')) {
-            if ($pengguna->foto_profil) {
-                Storage::disk('public')->delete($pengguna->foto_profil);
+            if ($user->foto_profil) {
+                Storage::disk('public')->delete($user->foto_profil);
             }
             $data['foto_profil'] = $request->file('avatar')->store('foto_profil', 'public');
         }
 
-        $pengguna->update($data);
+        $user->update($data);
 
         return back()->with('success', 'Profil berhasil diperbarui!');
     }
@@ -249,14 +249,14 @@ class UserController extends Controller
             'password'         => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $pengguna = Auth::user();
+        $user = Auth::user();
 
-        if (!Hash::check($request->current_password, $pengguna->kata_sandi)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 
-        $pengguna->update([
-            'kata_sandi' => Hash::make($request->password),
+        $user->update([
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Password berhasil diperbarui!');

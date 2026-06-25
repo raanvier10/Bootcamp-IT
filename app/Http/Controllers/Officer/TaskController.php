@@ -5,58 +5,49 @@ namespace App\Http\Controllers\Officer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Penugasan;
 
 class TaskController extends Controller
 {
     public function index(Request $request)
     {
         $petugasId = Auth::id();
-        $query = Penugasan::with(['laporan', 'laporan.wilayah', 'laporan.kategori', 'laporan.gambarSebelum'])
+        $query = \App\Models\Laporan::with(['wilayah', 'kategori', 'gambarSebelum'])
             ->where('petugas_id', $petugasId);
 
         if ($request->filled('status')) {
             $status = $request->status;
             if ($status === 'Baru') {
-                $query->whereHas('laporan', function ($q) {
-                    $q->whereIn('status', ['Terverifikasi', 'Ditugaskan']);
-                });
+                $query->whereIn('status', ['Terverifikasi', 'Ditugaskan']);
             } elseif ($status === 'Diproses') {
-                $query->whereHas('laporan', function ($q) {
-                    $q->whereIn('status', ['Dalam Perjalanan', 'Sedang Dibersihkan']);
-                });
+                $query->whereIn('status', ['Dalam Perjalanan', 'Sedang Dibersihkan']);
             } elseif ($status === 'Selesai') {
-                $query->whereHas('laporan', function ($q) {
-                    $q->whereIn('status', ['Selesai', 'Ditutup']);
-                });
+                $query->whereIn('status', ['Selesai', 'Ditutup']);
             }
         }
 
-        $tasks = $query->latest('ditugaskan_pada')->paginate(10);
+        $tasks = $query->latest('updated_at')->paginate(10);
 
         return view('officer.tasks', compact('tasks'));
     }
 
     public function show($id)
     {
-        $tugas = Penugasan::with([
-            'laporan', 
-            'laporan.wilayah', 
-            'laporan.kategori', 
-            'laporan.gambarSebelum',
-            'laporan.gambarSesudah',
-            'laporan.pengguna'
+        $laporan = \App\Models\Laporan::with([
+            'wilayah', 
+            'kategori', 
+            'gambarSebelum',
+            'gambarSesudah',
+            'user'
         ])
         ->where('petugas_id', Auth::id())
         ->findOrFail($id);
 
-        return view('officer.task_detail', compact('tugas'));
+        return view('officer.task_detail', compact('laporan'));
     }
 
     public function update(Request $request, $id)
     {
-        $penugasan = Penugasan::where('petugas_id', Auth::id())->findOrFail($id);
-        $laporan = $penugasan->laporan;
+        $laporan = \App\Models\Laporan::where('petugas_id', Auth::id())->findOrFail($id);
 
         $action = $request->input('action');
 
@@ -99,9 +90,8 @@ class TaskController extends Controller
                 'bujur'        => $laporan->bujur,
             ]);
 
-            // Update status Laporan & Penugasan
+            // Update status Laporan
             $laporan->update(['status' => 'Selesai']);
-            $penugasan->update(['diselesaikan_pada' => now()]);
 
             // Buat riwayat
             \App\Models\RiwayatStatusLaporan::create([

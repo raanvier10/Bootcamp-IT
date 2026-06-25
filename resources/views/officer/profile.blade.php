@@ -10,14 +10,14 @@
         
         <div class="relative px-8 pt-20 pb-8 flex flex-col sm:flex-row items-center sm:items-end gap-6 text-center sm:text-left">
             <div class="relative group">
-                <img src="{{ $user->avatar_url }}" alt="{{ $user->nama }}" id="avatar-preview" class="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white bg-white transition-transform group-hover:scale-105">
+                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" id="avatar-preview" class="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white bg-white transition-transform group-hover:scale-105">
                 <button type="button" onclick="document.getElementById('avatar').click()" class="absolute bottom-1 right-1 w-9 h-9 bg-white rounded-full shadow-md border border-hairline flex items-center justify-center text-primary hover:bg-canvas-soft hover:scale-110 transition-all cursor-pointer z-10">
                     <i data-lucide="camera" class="w-4.5 h-4.5"></i>
                 </button>
             </div>
             
             <div class="flex-1 pb-2">
-                <h2 class="text-2xl font-black text-ink tracking-tight">{{ $user->nama }}</h2>
+                <h2 class="text-2xl font-black text-ink tracking-tight">{{ $user->name }}</h2>
                 <p class="text-sm font-medium text-mute mt-1">{{ $user->email }}</p>
                 <div class="flex items-center justify-center sm:justify-start gap-2 mt-3">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-soft text-primary text-[10px] sm:text-xs font-bold border border-primary/20">
@@ -54,7 +54,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i data-lucide="user" class="w-4.5 h-4.5 text-mute"></i>
                             </div>
-                            <input type="text" name="name" id="name" value="{{ old('name', $user->nama) }}" class="form-input pl-10 h-11 rounded-xl" required>
+                            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="form-input pl-10 h-11 rounded-xl" required>
                         </div>
                         @error('name')<p class="form-error">{{ $message }}</p>@enderror
                     </div>

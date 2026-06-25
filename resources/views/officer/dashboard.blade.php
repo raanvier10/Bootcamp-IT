@@ -112,26 +112,26 @@
                                 </div>
                                 <div>
                                     <h3 class="text-base font-bold text-ink group-hover:text-primary transition-colors mb-1">
-                                        {{ $tugas->laporan->judul }}
+                                        {{ $tugas->judul }}
                                     </h3>
                                     <div class="flex flex-wrap items-center gap-2 text-xs font-medium text-mute">
                                         <span class="border border-hairline bg-white px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-bold">
-                                            {{ $tugas->laporan->kode_laporan }}
+                                            {{ $tugas->kode_laporan }}
                                         </span>
                                         <span class="w-1 h-1 bg-mute rounded-full"></span>
                                         <span><i data-lucide="calendar" class="w-3 h-3 inline mr-1"></i>{{ $tugas->ditugaskan_pada->format('d M Y, H:i') }}</span>
                                         <span class="w-1 h-1 bg-mute rounded-full"></span>
-                                        <span>{{ $tugas->laporan->wilayah->nama ?? 'Wilayah Tidak Diketahui' }}</span>
+                                        <span>{{ $tugas->wilayah->nama ?? 'Wilayah Tidak Diketahui' }}</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="shrink-0 flex items-center gap-3 sm:flex-col sm:items-end">
-                                <span class="{{ $tugas->laporan->kelas_badge_status }} px-3 py-1 text-xs font-bold rounded-full border shadow-sm">
-                                    {{ $tugas->laporan->label_status }}
+                                <span class="{{ $tugas->kelas_badge_status }} px-3 py-1 text-xs font-bold rounded-full border shadow-sm">
+                                    {{ $tugas->label_status }}
                                 </span>
-                                @if($tugas->laporan->prioritas == 'Tinggi' || $tugas->laporan->prioritas == 'Mendesak')
+                                @if($tugas->prioritas == 'Tinggi' || $tugas->prioritas == 'Mendesak')
                                     <span class="text-xs font-bold text-error flex items-center gap-1">
-                                        <i data-lucide="flame" class="w-3 h-3"></i> {{ $tugas->laporan->prioritas }}
+                                        <i data-lucide="flame" class="w-3 h-3"></i> {{ $tugas->prioritas }}
                                     </span>
                                 @endif
                             </div>

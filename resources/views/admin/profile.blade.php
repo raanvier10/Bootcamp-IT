@@ -14,10 +14,10 @@
             <div class="relative flex justify-between items-end -mt-12 mb-6">
                 <div class="flex items-end gap-5">
                     <div class="w-24 h-24 rounded-full border-4 border-canvas bg-white overflow-hidden shadow-md relative z-10">
-                        <img src="{{ $user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($user->nama).'&background=000&color=fff' }}" alt="{{ $user->nama }}" class="w-full h-full object-cover">
+                        <img src="{{ $user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=000&color=fff' }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                     </div>
                     <div class="mb-1">
-                        <h2 class="text-2xl font-black text-ink tracking-tight leading-none">{{ $user->nama }}</h2>
+                        <h2 class="text-2xl font-black text-ink tracking-tight leading-none">{{ $user->name }}</h2>
                         <p class="text-sm font-medium text-mute mt-1">Administrator Sistem</p>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                     
                     <div>
                         <p class="text-[10px] font-bold text-mute uppercase tracking-wider mb-1">Nama Lengkap</p>
-                        <p class="text-sm font-medium text-ink">{{ $user->nama }}</p>
+                        <p class="text-sm font-medium text-ink">{{ $user->name }}</p>
                     </div>
                     
                     <div>

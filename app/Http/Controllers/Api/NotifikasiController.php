@@ -16,7 +16,7 @@ class NotifikasiController extends Controller
     {
         $user = Auth::user();
         
-        $notifikasi = Notifikasi::where('pengguna_id', $user->id)
+        $notifikasi = Notifikasi::where('user_id', $user->id)
             ->orderBy('dibuat_pada', 'desc')
             ->get();
 
@@ -35,7 +35,7 @@ class NotifikasiController extends Controller
     public function markAsRead($id)
     {
         $user = Auth::user();
-        $notifikasi = Notifikasi::where('pengguna_id', $user->id)->find($id);
+        $notifikasi = Notifikasi::where('user_id', $user->id)->find($id);
 
         if (!$notifikasi) {
             return response()->json(['success' => false, 'message' => 'Notifikasi tidak ditemukan'], 404);

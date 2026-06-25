@@ -15,7 +15,7 @@ class Ulasan extends Model
 
     protected $fillable = [
         'laporan_id',
-        'pengguna_id',
+        'user_id',
         'nilai',
         'komentar',
     ];
@@ -30,9 +30,9 @@ class Ulasan extends Model
         return $this->belongsTo(Laporan::class, 'laporan_id');
     }
 
-    public function pengguna()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'pengguna_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Alias kompatibilitas

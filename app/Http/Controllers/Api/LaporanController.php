@@ -18,7 +18,7 @@ class LaporanController extends Controller
         $user = Auth::user();
         
         $laporans = Laporan::with(['kategori', 'wilayah', 'gambar'])
-            ->where('pengguna_id', $user->id)
+            ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -47,12 +47,12 @@ class LaporanController extends Controller
 
         $user = Auth::user();
 
-        // Buat Kode Laporan (misal: REP-YYYYMMDD-RANDOM)
-        $kode_laporan = 'REP-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
+        // Buat Kode Laporan
+        $kode_laporan = Laporan::buatKode();
 
         $laporan = Laporan::create([
             'kode_laporan' => $kode_laporan,
-            'pengguna_id' => $user->id,
+            'user_id' => $user->id,
             'wilayah_id' => $request->wilayah_id,
             'kategori_id' => $request->kategori_id,
             'judul' => $request->judul,
@@ -82,7 +82,7 @@ class LaporanController extends Controller
 
         // Buat Notifikasi untuk Pengguna
         \App\Models\Notifikasi::create([
-            'pengguna_id' => $user->id,
+            'user_id' => $user->id,
             'judul' => 'Laporan Berhasil Diterima',
             'pesan' => "Laporan Anda dengan kode $kode_laporan berhasil dikirim dan sedang menunggu verifikasi petugas.",
             'tipe' => 'info',

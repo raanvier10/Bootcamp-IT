@@ -14,7 +14,7 @@ class Notifikasi extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'pengguna_id',
+        'user_id',
         'judul',
         'pesan',
         'tipe',
@@ -26,9 +26,9 @@ class Notifikasi extends Model
         'dibuat_pada' => 'datetime',
     ];
 
-    public function pengguna()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'pengguna_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function scopeBelumDibaca($query)

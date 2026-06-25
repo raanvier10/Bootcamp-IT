@@ -49,8 +49,8 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2.5">
-                            <img src="{{ $laporan->pengguna->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->pengguna->nama ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->pengguna->nama }}" class="w-7 h-7 rounded-full object-cover">
-                            <span class="text-sm font-medium text-body">{{ $laporan->pengguna->nama }}</span>
+                            <img src="{{ $laporan->user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user->name }}" class="w-7 h-7 rounded-full object-cover">
+                            <span class="text-sm font-medium text-body">{{ $laporan->user->name }}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4">

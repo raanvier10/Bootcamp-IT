@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Officer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Penugasan;
 
 class OfficerController extends Controller
 {
@@ -14,24 +13,21 @@ class OfficerController extends Controller
         $petugasId = Auth::id();
 
         // Ambil statistik tugas
-        $tugasBaru = Penugasan::where('petugas_id', $petugasId)
-            ->whereHas('laporan', function ($q) {
-                $q->whereIn('status', ['Terverifikasi', 'Ditugaskan']);
-            })->count();
+        $tugasBaru = \App\Models\Laporan::where('petugas_id', $petugasId)
+            ->whereIn('status', ['Terverifikasi', 'Ditugaskan'])
+            ->count();
 
-        $sedangDikerjakan = Penugasan::where('petugas_id', $petugasId)
-            ->whereHas('laporan', function ($q) {
-                $q->whereIn('status', ['Dalam Perjalanan', 'Sedang Dibersihkan']);
-            })->count();
+        $sedangDikerjakan = \App\Models\Laporan::where('petugas_id', $petugasId)
+            ->whereIn('status', ['Dalam Perjalanan', 'Sedang Dibersihkan'])
+            ->count();
 
-        $tugasSelesai = Penugasan::where('petugas_id', $petugasId)
-            ->whereHas('laporan', function ($q) {
-                $q->whereIn('status', ['Selesai', 'Ditutup']);
-            })->count();
+        $tugasSelesai = \App\Models\Laporan::where('petugas_id', $petugasId)
+            ->whereIn('status', ['Selesai', 'Ditutup'])
+            ->count();
 
-        $tugasTerbaru = Penugasan::with(['laporan', 'laporan.wilayah', 'laporan.kategori'])
+        $tugasTerbaru = \App\Models\Laporan::with(['wilayah', 'kategori'])
             ->where('petugas_id', $petugasId)
-            ->latest('ditugaskan_pada')
+            ->latest('updated_at')
             ->take(5)
             ->get();
 
@@ -51,7 +47,7 @@ class OfficerController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $pengguna = Auth::user();
+        $user = Auth::user();
 
         $request->validate([
             'name'   => ['required', 'string', 'max:100'],
@@ -60,18 +56,18 @@ class OfficerController extends Controller
         ]);
 
         $data = [
-            'nama'    => $request->name,
+            'name'    => $request->name,
             'telepon' => $request->phone,
         ];
 
         if ($request->hasFile('avatar')) {
-            if ($pengguna->foto_profil) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($pengguna->foto_profil);
+            if ($user->foto_profil) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
             }
             $data['foto_profil'] = $request->file('avatar')->store('foto_profil', 'public');
         }
 
-        $pengguna->update($data);
+        $user->update($data);
 
         return back()->with('success', 'Profil berhasil diperbarui!');
     }
@@ -83,14 +79,14 @@ class OfficerController extends Controller
             'password'         => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $pengguna = Auth::user();
+        $user = Auth::user();
 
-        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $pengguna->kata_sandi)) {
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 
-        $pengguna->update([
-            'kata_sandi' => \Illuminate\Support\Facades\Hash::make($request->password),
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Password berhasil diperbarui!');
@@ -115,7 +111,7 @@ class OfficerController extends Controller
         if (!empty($matches)) {
             $laporan = \App\Models\Laporan::where('kode_laporan', $matches[0])->first();
             if ($laporan) {
-                $tugas = \App\Models\Penugasan::where('laporan_id', $laporan->id)
+                $tugas = \App\Models\Laporan::where('id', $laporan->id)
                             ->where('petugas_id', Auth::id())
                             ->first();
                 if ($tugas) {

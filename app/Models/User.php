@@ -11,51 +11,26 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // Tabel menggunakan nama 'pengguna'
-    protected $table = 'pengguna';
-
-    // Kolom primary key untuk autentikasi (password)
-    protected $authPasswordName = 'kata_sandi';
-
     protected $fillable = [
-        'peran_id',
-        'wilayah_id',
-        'nama',
+        'name',
         'email',
+        'password',
+        'peran',
+        'wilayah_id',
         'telepon',
-        'kata_sandi',
         'foto_profil',
-        'kode_pegawai',
-        'aktif',
     ];
 
     protected $hidden = [
-        'kata_sandi',
+        'password',
         'remember_token',
     ];
 
     protected $casts = [
-        'email_diverifikasi_pada' => 'datetime',
-        'aktif' => 'boolean',
+        'email_verified_at' => 'datetime',
     ];
 
-    // Override kolom timestamp email verified
-    public function getEmailVerifiedAtAttribute()
-    {
-        return $this->email_diverifikasi_pada;
-    }
-
-    public function setEmailVerifiedAtAttribute($value)
-    {
-        $this->email_diverifikasi_pada = $value;
-    }
-
     // ── Relationships ──
-
-    public function peran()
-    {
-        return $this->belongsTo(Peran::class, 'peran_id');
-    }
 
     public function wilayah()
     {
@@ -64,17 +39,17 @@ class User extends Authenticatable
 
     public function laporan()
     {
-        return $this->hasMany(Laporan::class, 'pengguna_id');
+        return $this->hasMany(Laporan::class, 'user_id');
     }
 
-    public function penugasan()
+    public function tugas()
     {
-        return $this->hasMany(Penugasan::class, 'petugas_id');
+        return $this->hasMany(Laporan::class, 'petugas_id');
     }
 
     public function ulasan()
     {
-        return $this->hasMany(Ulasan::class, 'pengguna_id');
+        return $this->hasMany(Ulasan::class, 'user_id');
     }
 
     public function artikel()
@@ -84,50 +59,39 @@ class User extends Authenticatable
 
     public function notifikasi()
     {
-        return $this->hasMany(Notifikasi::class, 'pengguna_id');
+        return $this->hasMany(Notifikasi::class, 'user_id');
     }
 
     // ── Role Helpers ──
 
     public function isAdmin(): bool
     {
-        return $this->peran && strtolower($this->peran->nama) === 'admin';
+        return strtolower($this->peran) === 'admin';
     }
 
     public function isPengguna(): bool
     {
-        return $this->peran && strtolower($this->peran->nama) === 'pengguna';
+        return strtolower($this->peran) === 'pelapor';
     }
 
     public function isPetugas(): bool
     {
-        return $this->peran && strtolower($this->peran->nama) === 'petugas';
+        return strtolower($this->peran) === 'petugas';
     }
 
-    // Alias lama untuk kompatibilitas
     public function isUser(): bool { return $this->isPengguna(); }
     public function isOfficer(): bool { return $this->isPetugas(); }
 
-    /**
-     * Get the user's photo URL or default avatar
-     */
     public function getFotoProfilUrlAttribute(): string
     {
         if ($this->foto_profil) {
             return asset('storage/' . $this->foto_profil);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nama) . '&background=16a34a&color=fff&size=128';
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=16a34a&color=fff&size=128';
     }
 
-    // Alias untuk kompatibilitas dengan kode lama yang pakai avatar_url
     public function getAvatarUrlAttribute(): string
     {
         return $this->foto_profil_url;
-    }
-
-    // Override getAuthPassword untuk pakai kolom kata_sandi
-    public function getAuthPassword()
-    {
-        return $this->kata_sandi;
     }
 }

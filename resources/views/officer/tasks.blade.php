@@ -43,8 +43,8 @@
             
             {{-- Thumbnail Area (Left) --}}
             <div class="relative w-32 sm:w-40 shrink-0 bg-canvas-soft overflow-hidden">
-                @if($tugas->laporan->gambarSebelum && $tugas->laporan->gambarSebelum->count() > 0)
-                    <img src="{{ Storage::url($tugas->laporan->gambarSebelum->first()->jalur_gambar) }}" alt="Foto Sampah" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                @if($tugas->gambarSebelum && $tugas->gambarSebelum->count() > 0)
+                    <img src="{{ Storage::url($tugas->gambarSebelum->first()->jalur_gambar) }}" alt="Foto Sampah" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
                 @else
                     <div class="w-full h-full flex flex-col items-center justify-center text-mute bg-canvas-soft-2">
                         <i data-lucide="image" class="w-8 h-8 opacity-30 mb-1"></i>
@@ -53,32 +53,32 @@
                 
                 {{-- Status Badge (Floating Top Left) --}}
                 <div class="absolute top-2 left-2">
-                    <span class="{{ $tugas->laporan->kelas_badge_status }} scale-75 origin-top-left shadow-sm backdrop-blur-md">{{ $tugas->laporan->label_status }}</span>
+                    <span class="{{ $tugas->kelas_badge_status }} scale-75 origin-top-left shadow-sm backdrop-blur-md">{{ $tugas->label_status }}</span>
                 </div>
             </div>
 
             {{-- Content Area (Right) --}}
             <div class="p-4 sm:p-5 flex-1 flex flex-col min-w-0">
                 <div class="flex items-start justify-between gap-2 mb-2">
-                    <span class="text-[10px] font-bold text-mute uppercase tracking-wider border border-hairline px-2 py-0.5 rounded-md">{{ $tugas->laporan->kode_laporan }}</span>
-                    @if($tugas->laporan->prioritas == 'Tinggi' || $tugas->laporan->prioritas == 'Mendesak')
-                        <span class="text-error text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i> {{ $tugas->laporan->prioritas }}</span>
+                    <span class="text-[10px] font-bold text-mute uppercase tracking-wider border border-hairline px-2 py-0.5 rounded-md">{{ $tugas->kode_laporan }}</span>
+                    @if($tugas->prioritas == 'Tinggi' || $tugas->prioritas == 'Mendesak')
+                        <span class="text-error text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i> {{ $tugas->prioritas }}</span>
                     @else
-                        <span class="text-info text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><i data-lucide="flag" class="w-3 h-3"></i> {{ $tugas->laporan->prioritas }}</span>
+                        <span class="text-info text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><i data-lucide="flag" class="w-3 h-3"></i> {{ $tugas->prioritas }}</span>
                     @endif
                 </div>
                 
-                <h3 class="text-sm sm:text-base font-bold text-ink mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-snug">{{ $tugas->laporan->judul }}</h3>
+                <h3 class="text-sm sm:text-base font-bold text-ink mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-snug">{{ $tugas->judul }}</h3>
                 
                 <div class="mt-auto flex flex-col gap-1.5 pt-2">
                     <div class="flex items-center gap-2 text-xs text-body">
                         <i data-lucide="map-pin" class="w-3.5 h-3.5 text-mute shrink-0"></i>
-                        <span class="truncate font-medium">{{ $tugas->laporan->alamat }}</span>
+                        <span class="truncate font-medium">{{ $tugas->alamat }}</span>
                     </div>
                     <div class="flex items-center justify-between gap-2 text-xs text-body">
                         <div class="flex items-center gap-2 min-w-0">
                             <i data-lucide="tag" class="w-3.5 h-3.5 text-mute shrink-0"></i>
-                            <span class="truncate font-medium">{{ $tugas->laporan->kategori->nama ?? '-' }}</span>
+                            <span class="truncate font-medium">{{ $tugas->kategori->nama ?? '-' }}</span>
                         </div>
                         <span class="text-[10px] font-bold text-mute shrink-0"><i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>{{ $tugas->ditugaskan_pada->diffForHumans() }}</span>
                     </div>

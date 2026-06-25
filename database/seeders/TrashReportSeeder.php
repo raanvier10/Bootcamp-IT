@@ -5,19 +5,13 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class TrashReportSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Peran
-        DB::table('peran')->insert([
-            ['id' => 1, 'nama' => 'Admin',    'created_at' => now(), 'updated_at' => now()],
-            ['id' => 2, 'nama' => 'Pengguna', 'created_at' => now(), 'updated_at' => now()],
-            ['id' => 3, 'nama' => 'Petugas',  'created_at' => now(), 'updated_at' => now()],
-        ]);
-
-        // 2. Wilayah
+        // 1. Wilayah
         DB::table('wilayah')->insert([
             ['id' => 1, 'kode' => 'KRW-BRT', 'nama' => 'Karawang Barat',   'created_at' => now(), 'updated_at' => now()],
             ['id' => 2, 'kode' => 'KRW-TMR', 'nama' => 'Karawang Timur',   'created_at' => now(), 'updated_at' => now()],
@@ -26,7 +20,7 @@ class TrashReportSeeder extends Seeder
             ['id' => 5, 'kode' => 'CLM',     'nama' => 'Cikampek',         'created_at' => now(), 'updated_at' => now()],
         ]);
 
-        // 3. Kategori
+        // 2. Kategori
         DB::table('kategori')->insert([
             ['id' => 1, 'nama' => 'Plastik',             'deskripsi' => 'Sampah plastik seperti botol, kantong, dan kemasan',            'created_at' => now(), 'updated_at' => now()],
             ['id' => 2, 'nama' => 'Organik',             'deskripsi' => 'Sampah organik seperti sisa makanan dan daun',                 'created_at' => now(), 'updated_at' => now()],
@@ -37,48 +31,47 @@ class TrashReportSeeder extends Seeder
             ['id' => 7, 'nama' => 'Sampah Besar',        'deskripsi' => 'Sampah berukuran besar seperti furnitur dan elektronik',      'created_at' => now(), 'updated_at' => now()],
         ]);
 
-        // 4. Admin
-        DB::table('pengguna')->insert([
-            'peran_id'               => 1,
-            'nama'                   => 'Admin TrashReport',
+        // 3. Admin
+        DB::table('users')->insert([
+            'id'                     => 1,
+            'peran'                  => 'Admin',
+            'name'                   => 'Admin TrashReport',
             'email'                  => 'admin@trashreport.id',
             'telepon'                => '081234567890',
-            'kata_sandi'             => Hash::make('password'),
-            'aktif'                  => true,
-            'email_diverifikasi_pada' => now(),
+            'password'               => Hash::make('password'),
+            'email_verified_at'      => now(),
             'created_at'             => now(),
             'updated_at'             => now(),
         ]);
 
-        // 5. Demo Pengguna
-        DB::table('pengguna')->insert([
-            'peran_id'               => 2,
-            'nama'                   => 'Budi Santoso',
+        // 4. Demo Pengguna
+        DB::table('users')->insert([
+            'id'                     => 2,
+            'peran'                  => 'Pelapor',
+            'name'                   => 'Budi Santoso',
             'email'                  => 'budi@email.com',
             'telepon'                => '081298765432',
-            'kata_sandi'             => Hash::make('password'),
-            'aktif'                  => true,
-            'email_diverifikasi_pada' => now(),
+            'password'               => Hash::make('password'),
+            'email_verified_at'      => now(),
             'created_at'             => now(),
             'updated_at'             => now(),
         ]);
 
-        // 6. Demo Petugas
-        DB::table('pengguna')->insert([
-            'peran_id'               => 3,
+        // 5. Demo Petugas
+        DB::table('users')->insert([
+            'id'                     => 3,
+            'peran'                  => 'Petugas',
             'wilayah_id'             => 1,
-            'nama'                   => 'Petugas Karawang Barat',
+            'name'                   => 'Petugas Karawang Barat',
             'email'                  => 'petugas.krwbrt@trashreport.id',
             'telepon'                => '081311223344',
-            'kata_sandi'             => Hash::make('password'),
-            'kode_pegawai'           => 'PTG-001',
-            'aktif'                  => true,
-            'email_diverifikasi_pada' => now(),
+            'password'               => Hash::make('password'),
+            'email_verified_at'      => now(),
             'created_at'             => now(),
             'updated_at'             => now(),
         ]);
 
-        // 7. Artikel edukasi
+        // 6. Artikel edukasi
         DB::table('artikel')->insert([
             [
                 'penulis_id'        => 1,
@@ -100,19 +93,46 @@ class TrashReportSeeder extends Seeder
                 'created_at'        => now()->subDays(7),
                 'updated_at'        => now()->subDays(7),
             ],
-            [
-                'penulis_id'        => 1,
-                'judul'             => 'Mengenal Konsep Zero Waste untuk Kehidupan Sehari-hari',
-                'slug'              => 'mengenal-konsep-zero-waste',
-                'isi'               => '<p>Konsep zero waste atau nol sampah adalah filosofi yang mendorong kita untuk mengurangi produksi sampah hingga seminimal mungkin.</p><h2>Prinsip 5R</h2><p>Refuse (menolak), Reduce (mengurangi), Reuse (menggunakan kembali), Recycle (mendaur ulang), dan Rot (mengompos) adalah lima prinsip utama zero waste.</p>',
-                'sudah_diterbitkan' => true,
-                'diterbitkan_pada'  => now()->subDays(3),
-                'created_at'        => now()->subDays(3),
-                'updated_at'        => now()->subDays(3),
-            ],
         ]);
 
-        // Data laporan, penugasan, dan ulasan sengaja dikosongkan 
-        // agar pengguna dapat mengisi data sendiri melalui aplikasi.
+        // 7. Dummy Laporan
+        $kodeLaporan = 'TR-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
+        DB::table('laporan')->insert([
+            'id'               => 1,
+            'kode_laporan'     => $kodeLaporan,
+            'user_id'          => 2,
+            'petugas_id'       => 3,
+            'wilayah_id'       => 1,
+            'kategori_id'      => 1,
+            'judul'            => 'Tumpukan Sampah Plastik di Jalan Baru',
+            'deskripsi'        => 'Banyak sampah plastik menumpuk di pinggir jalan dekat pasar.',
+            'lintang'          => -6.3000000,
+            'bujur'            => 107.3000000,
+            'alamat'           => 'Jalan Baru Karawang Barat',
+            'prioritas'        => 'Sedang',
+            'status'           => 'Ditugaskan',
+            'alasan_penolakan' => null,
+            'dilaporkan_pada'  => now()->subDays(1),
+            'created_at'       => now()->subDays(1),
+            'updated_at'       => now()->subDays(1),
+        ]);
+
+        // 8. Riwayat Status Laporan (Log Penugasan)
+        DB::table('riwayat_status_laporan')->insert([
+            [
+                'laporan_id'  => 1,
+                'status'      => 'Menunggu',
+                'catatan'     => 'Laporan baru dibuat',
+                'diubah_oleh' => 2, // Pelapor
+                'dibuat_pada' => now()->subDays(1),
+            ],
+            [
+                'laporan_id'  => 1,
+                'status'      => 'Ditugaskan',
+                'catatan'     => 'Ditugaskan ke Petugas Karawang Barat',
+                'diubah_oleh' => 1, // Admin
+                'dibuat_pada' => now(),
+            ]
+        ]);
     }
 }

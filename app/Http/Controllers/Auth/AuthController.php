@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Peran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -39,16 +38,16 @@ class AuthController extends Controller
         ]);
 
         // Cari pengguna berdasarkan email
-        $pengguna = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if ($pengguna && Hash::check($request->password, $pengguna->kata_sandi)) {
-            Auth::login($pengguna, $request->boolean('remember'));
+        if ($user && Hash::check($request->password, $user->password)) {
+            Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
             // Redirect berdasarkan peran
-            if ($pengguna->isAdmin()) {
+            if ($user->isAdmin()) {
                 return redirect('/admin/dashboard');
-            } elseif ($pengguna->isPetugas()) {
+            } elseif ($user->isPetugas()) {
                 return redirect('/officer/dashboard');
             }
 
@@ -75,24 +74,21 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:100', 'unique:pengguna'],
+            'email' => ['required', 'string', 'email', 'max:100', 'unique:users'],
             'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $peranPengguna = Peran::where('nama', 'Pengguna')->first();
-
-        $pengguna = User::create([
-            'peran_id' => $peranPengguna->id,
-            'nama' => $request->name,
+        $user = User::create([
+            'peran' => 'Pelapor',
+            'name' => $request->name,
             'email' => $request->email,
             'telepon' => $request->phone,
-            'kata_sandi' => Hash::make($request->password),
-            'aktif' => true,
-            'email_diverifikasi_pada' => now(),
+            'password' => Hash::make($request->password),
+            'email_verified_at' => now(),
         ]);
 
-        Auth::login($pengguna);
+        Auth::login($user);
 
         return redirect('/user/dashboard');
     }

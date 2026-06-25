@@ -9,7 +9,7 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\Laporan::with(['pengguna', 'wilayah', 'kategori']);
+        $query = \App\Models\Laporan::with(['user', 'wilayah', 'kategori']);
         
         if ($request->filled('status') && $request->status !== 'Semua Status') {
             $query->where('status', $request->status);
@@ -21,7 +21,7 @@ class ReportController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $query = \App\Models\Laporan::with(['pengguna', 'wilayah', 'kategori', 'penugasan.petugas']);
+        $query = \App\Models\Laporan::with(['user', 'wilayah', 'kategori', 'petugas']);
         
         if ($request->filled('status') && $request->status !== 'Semua Status') {
             $query->where('status', $request->status);
@@ -41,8 +41,8 @@ class ReportController extends Controller
 
     public function show($id)
     {
-        $laporan = \App\Models\Laporan::with(['pengguna', 'wilayah', 'kategori', 'gambarSebelum', 'gambarSesudah', 'riwayatStatus', 'riwayatStatus.pengguna'])->findOrFail($id);
-        $petugas = \App\Models\User::where('peran_id', 3)->where('aktif', true)->get();
+        $laporan = \App\Models\Laporan::with(['user', 'wilayah', 'kategori', 'gambarSebelum', 'gambarSesudah', 'riwayatStatus', 'riwayatStatus.user'])->findOrFail($id);
+        $petugas = \App\Models\User::where('peran', 'Petugas')->get();
         
         // Deteksi Duplikat
         $activeReports = \App\Models\Laporan::where('id', '!=', $laporan->id)
@@ -79,20 +79,16 @@ class ReportController extends Controller
     {
         $request->validate([
             'status' => 'required|in:Terverifikasi,Ditolak',
-            'petugas_id' => 'required_if:status,Terverifikasi|nullable|exists:pengguna,id',
+            'petugas_id' => 'required_if:status,Terverifikasi|nullable|exists:users,id',
             'alasan_penolakan' => 'required_if:status,Ditolak|nullable|string',
         ]);
 
         $laporan = \App\Models\Laporan::findOrFail($id);
         
         if ($request->status === 'Terverifikasi') {
-            $laporan->update(['status' => 'Ditugaskan']);
-            
-            \App\Models\Penugasan::create([
-                'laporan_id' => $laporan->id,
-                'petugas_id' => $request->petugas_id,
-                'ditugaskan_oleh' => \Illuminate\Support\Facades\Auth::id(),
-                'ditugaskan_pada' => now(),
+            $laporan->update([
+                'status' => 'Ditugaskan',
+                'petugas_id' => $request->petugas_id
             ]);
 
             \App\Models\RiwayatStatusLaporan::create([
@@ -103,7 +99,7 @@ class ReportController extends Controller
             ]);
 
             \App\Models\Notifikasi::create([
-                'pengguna_id' => $request->petugas_id,
+                'user_id' => $request->petugas_id,
                 'judul' => "Tugas Baru: {$laporan->kode_laporan}",
                 'pesan' => "Anda mendapat tugas baru untuk laporan di {$laporan->alamat}.",
                 'tipe' => 'info',
@@ -126,7 +122,7 @@ class ReportController extends Controller
             ]);
 
             \App\Models\Notifikasi::create([
-                'pengguna_id' => $laporan->pengguna_id,
+                'user_id' => $laporan->user_id,
                 'judul' => "Peringatan Sistem",
                 'pesan' => "Laporan {$laporan->kode_laporan} ditolak karena {$request->alasan_penolakan}",
                 'tipe' => 'error',

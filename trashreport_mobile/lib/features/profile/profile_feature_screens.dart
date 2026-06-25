@@ -80,7 +80,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (response.statusCode == 200) {
         final userData = response.data['data'];
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_name', userData['nama']);
+        await prefs.setString('user_name', userData['name']);
         await prefs.setString('user_email', userData['email']);
         await prefs.setString('user_telepon', userData['telepon']);
         if (userData['foto_profil'] != null) {

@@ -76,7 +76,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     int selesai = 0;
 
     for (var t in result) {
-      String status = (t['laporan']?['status'] ?? '').toString().toLowerCase();
+      String status = (t['status'] ?? '').toString().toLowerCase();
       if (status == 'ditugaskan') baru++;
       else if (status == 'dalam perjalanan' || status == 'sedang dibersihkan') dikerjakan++;
       else if (status == 'selesai') selesai++;
@@ -380,7 +380,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                               separatorBuilder: (c, i) => const SizedBox(height: 8),
                               itemBuilder: (context, index) {
                                 final tugas = _tasks[index];
-                                final laporan = tugas['laporan'] ?? {};
+                                final laporan = tugas;
                                 final wilayah = laporan['wilayah'] ?? {};
                                 
                                 return GestureDetector(
@@ -421,7 +421,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                                                   ),
                                                   Icon(Icons.circle, size: 4, color: muteColor),
                                                   Text(
-                                                    tugas['ditugaskan_pada'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['ditugaskan_pada'])) : '-', 
+                                                    tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'])) : '-', 
                                                     style: GoogleFonts.outfit(color: muteColor, fontSize: 10, fontWeight: FontWeight.w500)
                                                   ),
                                                 ],

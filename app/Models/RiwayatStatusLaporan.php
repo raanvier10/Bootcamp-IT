@@ -29,7 +29,7 @@ class RiwayatStatusLaporan extends Model
         return $this->belongsTo(Laporan::class, 'laporan_id');
     }
 
-    public function pengguna()
+    public function user()
     {
         return $this->belongsTo(User::class, 'diubah_oleh');
     }
@@ -37,7 +37,7 @@ class RiwayatStatusLaporan extends Model
     // Alias kompatibilitas
     public function changedByUser()
     {
-        return $this->pengguna();
+        return $this->user();
     }
 
     public function getNoteAttribute(): ?string { return $this->catatan; }

@@ -285,7 +285,7 @@ class _PetaRuteScreenState extends State<PetaRuteScreen> {
   }
 
   Widget _buildTaskCard(dynamic tugas) {
-    final laporan = tugas['laporan'] ?? {};
+    final laporan = tugas;
     final wilayah = laporan['wilayah'] ?? {};
     String status = (laporan['status'] ?? 'MENUNGGU').toString().toUpperCase();
 

@@ -13,7 +13,8 @@ class Laporan extends Model
 
     protected $fillable = [
         'kode_laporan',
-        'pengguna_id',
+        'user_id',
+        'petugas_id',
         'wilayah_id',
         'kategori_id',
         'judul',
@@ -33,9 +34,14 @@ class Laporan extends Model
         'dilaporkan_pada' => 'datetime',
     ];
 
-    public function pengguna()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'pengguna_id');
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function petugas()
+    {
+        return $this->belongsTo(User::class, 'petugas_id');
     }
 
     public function wilayah()
@@ -66,16 +72,6 @@ class Laporan extends Model
     public function riwayatStatus()
     {
         return $this->hasMany(RiwayatStatusLaporan::class, 'laporan_id')->orderBy('dibuat_pada', 'desc');
-    }
-
-    public function penugasan()
-    {
-        return $this->hasOne(Penugasan::class, 'laporan_id')->latest();
-    }
-
-    public function semuaPenugasan()
-    {
-        return $this->hasMany(Penugasan::class, 'laporan_id');
     }
 
     public function ulasan()
@@ -130,13 +126,12 @@ class Laporan extends Model
     public function getStatusLabelAttribute(): string { return $this->label_status; }
     public function getStatusBadgeClassAttribute(): string { return $this->kelas_badge_status; }
     public function getPriorityLabelAttribute(): string { return $this->label_prioritas; }
-    public function getUserAttribute() { return $this->pengguna; }
+    public function getUserAttribute() { return $this->user; }
     public function getDistrictAttribute() { return $this->wilayah; }
     public function getCategoryAttribute() { return $this->kategori; }
     public function getBeforeImagesAttribute() { return $this->gambarSebelum; }
     public function getAfterImagesAttribute() { return $this->gambarSesudah; }
     public function getStatusHistoriesAttribute() { return $this->riwayatStatus; }
-    public function getAssignmentAttribute() { return $this->penugasan; }
     public function getFeedbackAttribute() { return $this->ulasan; }
     public function getReportCodeAttribute(): string { return $this->kode_laporan; }
     public function getLatitudeAttribute() { return $this->lintang; }

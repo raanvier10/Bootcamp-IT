@@ -32,7 +32,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   void initState() {
     super.initState();
-    final laporan = widget.tugas['laporan'] ?? {};
+    final laporan = widget.tugas;
     String status = (laporan['status'] ?? '').toString().toLowerCase();
     if (status == 'dalam perjalanan') _currentStep = 1;
     if (status == 'sedang dibersihkan' || status == 'sedang dikerjakan') _currentStep = 2;
@@ -122,7 +122,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final laporan = widget.tugas['laporan'] ?? {};
+    final laporan = widget.tugas;
     final status = (laporan['status'] ?? 'DITUGASKAN').toString().toUpperCase();
     final isSelesai = status == 'SELESAI';
 
@@ -285,7 +285,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 4),
-                                    Text(laporan['pengguna']?['nama'] ?? 'Masyarakat', style: GoogleFonts.outfit(fontSize: 13, color: inkColor)),
+                                    Text(laporan['user']?['name'] ?? 'Masyarakat', style: GoogleFonts.outfit(fontSize: 13, color: inkColor)),
                                   ],
                                 ),
                               ),

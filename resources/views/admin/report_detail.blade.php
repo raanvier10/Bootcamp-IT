@@ -173,7 +173,7 @@
                             <select name="petugas_id" class="form-select w-full bg-white border-hairline rounded-xl py-2.5 px-3 focus:ring-primary focus:border-primary shadow-sm text-sm">
                                 <option value="">-- Pilih Petugas --</option>
                                 @foreach($petugas as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama }} (Wilayah: {{ $p->wilayah->nama ?? 'Umum' }})</option>
+                                    <option value="{{ $p->id }}">{{ $p->name }} (Wilayah: {{ $p->wilayah->nama ?? 'Umum' }})</option>
                                 @endforeach
                             </select>
                             <p class="text-[10px] text-mute mt-1.5">Sistem akan mengirimkan notifikasi otomatis ke petugas terpilih.</p>
@@ -197,15 +197,15 @@
         <div class="bg-canvas rounded-[24px] border border-hairline shadow-card-sm p-5">
             <p class="text-[11px] font-bold text-mute uppercase tracking-widest mb-4">Informasi Pelapor</p>
             <div class="flex items-center gap-3 mb-4">
-                <img src="{{ $laporan->pengguna->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->pengguna->nama ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->pengguna->nama }}" class="w-12 h-12 rounded-full object-cover border border-hairline">
+                <img src="{{ $laporan->user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user->name }}" class="w-12 h-12 rounded-full object-cover border border-hairline">
                 <div>
-                    <p class="text-sm font-bold text-ink">{{ $laporan->pengguna->nama }}</p>
-                    <p class="text-xs text-mute">{{ $laporan->pengguna->email }}</p>
+                    <p class="text-sm font-bold text-ink">{{ $laporan->user->name }}</p>
+                    <p class="text-xs text-mute">{{ $laporan->user->email }}</p>
                 </div>
             </div>
-            @if($laporan->pengguna->telepon)
+            @if($laporan->user->telepon)
             <div class="flex items-center gap-2 text-sm text-body">
-                <i data-lucide="phone" class="w-4 h-4 text-mute"></i> {{ $laporan->pengguna->telepon }}
+                <i data-lucide="phone" class="w-4 h-4 text-mute"></i> {{ $laporan->user->telepon }}
             </div>
             @endif
         </div>
@@ -224,7 +224,7 @@
                     </div>
                     <div class="pb-2">
                         <p class="text-sm font-bold text-ink">{{ $riwayat->status }}</p>
-                        <p class="text-[11px] text-mute mt-0.5">{{ $riwayat->created_at->format('d M Y, H:i') }} &bull; Oleh: {{ $riwayat->pengguna->nama ?? 'Sistem' }}</p>
+                        <p class="text-[11px] text-mute mt-0.5">{{ $riwayat->created_at->format('d M Y, H:i') }} &bull; Oleh: {{ $riwayat->user->name ?? 'Sistem' }}</p>
                         @if($riwayat->catatan)
                             <p class="text-xs text-body mt-2 bg-canvas-soft p-2 rounded-lg border border-hairline">{{ $riwayat->catatan }}</p>
                         @endif

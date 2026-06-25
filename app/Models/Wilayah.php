@@ -13,7 +13,7 @@ class Wilayah extends Model
 
     protected $fillable = ['kode', 'nama'];
 
-    public function pengguna()
+    public function users()
     {
         return $this->hasMany(User::class, 'wilayah_id');
     }

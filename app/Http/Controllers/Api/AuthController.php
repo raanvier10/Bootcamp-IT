@@ -20,16 +20,16 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::with('peran')->where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->kata_sandi)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Email atau Password salah.'
             ], 401);
         }
 
-        $roleName = $user->peran ? strtolower($user->peran->nama) : '';
+        $roleName = strtolower($user->peran);
 
         // Cek apakah role diizinkan login lewat mobile (Admin sebaiknya tidak usah di mobile)
         if ($roleName === 'admin') {
@@ -48,7 +48,7 @@ class AuthController extends Controller
             'data' => [
                 'user' => $user,
                 'token' => $token,
-                'role' => $roleName // penting untuk routing flutter (pengguna / petugas)
+                'role' => $roleName // penting untuk routing flutter (pelapor / petugas)
             ]
         ], 200);
     }
@@ -73,21 +73,18 @@ class AuthController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:100',
-            'email' => 'required|string|email|max:100|unique:pengguna',
+            'email' => 'required|string|email|max:100|unique:users,email',
             'telepon' => 'required|string|max:20',
             'password' => 'required|min:8',
         ]);
 
-        $peranPengguna = \App\Models\Peran::where('nama', 'Pengguna')->first();
-
         $user = User::create([
-            'peran_id' => $peranPengguna->id,
-            'nama' => $request->nama,
+            'peran' => 'Pelapor',
+            'name' => $request->nama,
             'email' => $request->email,
             'telepon' => $request->telepon,
-            'kata_sandi' => Hash::make($request->password),
-            'aktif' => true,
-            'email_diverifikasi_pada' => now(),
+            'password' => Hash::make($request->password),
+            'email_verified_at' => now(),
         ]);
 
         $token = $user->createToken('mobile_token')->plainTextToken;
@@ -98,7 +95,7 @@ class AuthController extends Controller
             'data' => [
                 'user' => $user,
                 'token' => $token,
-                'role' => 'pengguna'
+                'role' => 'pelapor'
             ]
         ], 201);
     }
@@ -108,12 +105,12 @@ class AuthController extends Controller
         $user = Auth::user();
         $request->validate([
             'nama' => 'required|string|max:100',
-            'email' => 'required|string|email|max:100|unique:pengguna,email,' . $user->id,
+            'email' => 'required|string|email|max:100|unique:users,email,' . $user->id,
             'telepon' => 'required|string|max:20',
             'foto_profil' => 'nullable|image|max:2048',
         ]);
 
-        $user->nama = $request->nama;
+        $user->name = $request->nama;
         $user->email = $request->email;
         $user->telepon = $request->telepon;
         
@@ -139,14 +136,14 @@ class AuthController extends Controller
             'password_baru' => 'required|min:8|confirmed',
         ]);
 
-        if (!Hash::check($request->password_lama, $user->kata_sandi)) {
+        if (!Hash::check($request->password_lama, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Password lama tidak sesuai.'
             ], 400);
         }
 
-        $user->kata_sandi = Hash::make($request->password_baru);
+        $user->password = Hash::make($request->password_baru);
         $user->save();
 
         return response()->json([

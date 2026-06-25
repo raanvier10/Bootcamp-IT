@@ -43,7 +43,7 @@ class _DaftarTugasScreenState extends State<DaftarTugasScreen> {
   Widget build(BuildContext context) {
     List<dynamic> filteredTasks = widget.tasks.where((t) {
       if (_selectedFilter == 'Semua Tugas') return true;
-      String status = (t['laporan']?['status'] ?? '').toString().toLowerCase();
+      String status = (t['status'] ?? '').toString().toLowerCase();
       if (_selectedFilter == 'Ditugaskan' && status.contains('ditugaskan')) return true;
       if (_selectedFilter == 'Dalam Perjalanan' && status.contains('jalan')) return true;
       if (_selectedFilter == 'Sedang Dibersihkan' && status.contains('bersih')) return true;
@@ -144,7 +144,7 @@ class _DaftarTugasScreenState extends State<DaftarTugasScreen> {
                   separatorBuilder: (c, i) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final tugas = filteredTasks[index];
-                    final laporan = tugas['laporan'] ?? {};
+                    final laporan = tugas;
                     final wilayah = laporan['wilayah'] ?? {};
                     String status = (laporan['status'] ?? 'MENUNGGU').toString().toUpperCase();
                     
@@ -187,7 +187,7 @@ class _DaftarTugasScreenState extends State<DaftarTugasScreen> {
                                       ),
                                       Icon(Icons.circle, size: 4, color: hairlineColor),
                                       Text(
-                                        tugas['ditugaskan_pada'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['ditugaskan_pada'])) : '-', 
+                                        tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'])) : '-', 
                                         style: GoogleFonts.outfit(color: muteColor, fontSize: 10, fontWeight: FontWeight.w500)
                                       ),
                                     ],

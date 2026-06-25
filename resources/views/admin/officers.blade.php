@@ -43,9 +43,9 @@
                 <tr class="hover:bg-canvas-soft transition-colors group">
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
-                            <img src="{{ $officer->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($officer->nama).'&background=000&color=fff' }}" alt="{{ $officer->nama }}" class="w-10 h-10 rounded-full object-cover border border-hairline">
+                            <img src="{{ $officer->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($officer->name).'&background=000&color=fff' }}" alt="{{ $officer->name }}" class="w-10 h-10 rounded-full object-cover border border-hairline">
                             <div>
-                                <p class="text-sm font-bold text-ink">{{ $officer->nama }}</p>
+                                <p class="text-sm font-bold text-ink">{{ $officer->name }}</p>
                                 <p class="text-[11px] text-mute mt-0.5">{{ $officer->email }}</p>
                                 <p class="text-[11px] text-mute">{{ $officer->telepon ?? '-' }}</p>
                             </div>
@@ -64,9 +64,9 @@
                     </td>
                     <td class="px-6 py-4">
                         @php
-                            $totalTugas = $officer->penugasan->count();
-                            $tugasSelesai = $officer->penugasan->filter(function($p) {
-                                return $p->laporan && in_array($p->laporan->status, ['Selesai', 'Ditutup']);
+                            $totalTugas = $officer->tugas->count();
+                            $tugasSelesai = $officer->tugas->filter(function($p) {
+                                return in_array($p->status, ['Selesai', 'Ditutup']);
                             })->count();
                             
                             $persentase = $totalTugas > 0 ? round(($tugasSelesai / $totalTugas) * 100) : 0;
@@ -74,9 +74,9 @@
                             // Calculate rating
                             $totalRating = 0;
                             $countRating = 0;
-                            foreach($officer->penugasan as $p) {
-                                if($p->laporan && $p->laporan->ulasan) {
-                                    $totalRating += $p->laporan->ulasan->nilai;
+                            foreach($officer->tugas as $p) {
+                                if($p->ulasan) {
+                                    $totalRating += $p->ulasan->nilai;
                                     $countRating++;
                                 }
                             }
@@ -111,7 +111,7 @@
                     </td>
                     <td class="px-6 py-4 text-right">
                         <button class="btn-secondary-sm inline-flex items-center gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity" 
-                            onclick="openEditModal({{ $officer->id }}, '{{ addslashes($officer->nama) }}', '{{ addslashes($officer->telepon) }}', '{{ $officer->wilayah_id }}', {{ $officer->aktif ? 'true' : 'false' }})">
+                            onclick="openEditModal({{ $officer->id }}, '{{ addslashes($officer->name) }}', '{{ addslashes($officer->telepon) }}', '{{ $officer->wilayah_id }}', {{ $officer->aktif ? 'true' : 'false' }})">
                             <i data-lucide="edit" class="w-4 h-4"></i> Edit
                         </button>
                     </td>

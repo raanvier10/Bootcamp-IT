@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('laporan', function (Blueprint $table) {
             $table->id();
             $table->string('kode_laporan', 30)->unique();
-            $table->foreignId('pengguna_id')->constrained('pengguna')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('petugas_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('wilayah_id')->constrained('wilayah')->onDelete('restrict');
             $table->foreignId('kategori_id')->constrained('kategori')->onDelete('restrict');
             $table->string('judul', 150);

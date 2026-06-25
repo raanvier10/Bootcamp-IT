@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('laporan_id')->constrained('laporan')->onDelete('cascade');
             $table->string('status', 50);
             $table->text('catatan')->nullable();
-            $table->foreignId('diubah_oleh')->constrained('pengguna')->onDelete('cascade');
+            $table->foreignId('diubah_oleh')->constrained('users')->onDelete('cascade');
             $table->timestamp('dibuat_pada')->useCurrent();
         });
     }
