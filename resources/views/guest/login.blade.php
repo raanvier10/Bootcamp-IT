@@ -33,6 +33,7 @@
                         <input type="checkbox" name="remember" class="w-4 h-4 rounded border-hairline text-primary focus:ring-primary-soft">
                         Ingat saya
                     </label>
+                    <a href="{{ route('password.request') }}" class="text-sm font-medium text-primary hover:underline">Lupa Password?</a>
                 </div>
                 <button type="submit" class="btn-primary w-full" id="login-submit-btn">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
@@ -41,10 +42,7 @@
             </form>
             <p class="text-center text-sm text-body mt-6">Belum punya akun? <a href="{{ route('register') }}" class="text-primary font-medium hover:underline">Daftar sekarang</a></p>
         </div>
-        <div class="mt-6 p-4 bg-canvas-soft rounded-lg border border-hairline">
-            <p class="text-xs text-mute text-center mb-2">Demo Account</p>
-            <p class="text-xs text-body text-center">Email: <strong>budi@email.com</strong> | Password: <strong>password</strong></p>
-        </div>
+
         <div class="mt-6 text-center">
             <a href="{{ route('admin.login') }}" class="text-xs text-mute hover:text-primary transition-colors font-medium"><i data-lucide="shield" class="w-3.5 h-3.5 inline mr-1 -mt-0.5"></i>Masuk sebagai Petugas / Admin</a>
         </div>

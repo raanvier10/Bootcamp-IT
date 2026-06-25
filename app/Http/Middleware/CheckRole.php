@@ -17,12 +17,12 @@ class CheckRole
             return redirect('/login');
         }
 
-        $userRole = strtolower($request->user()->peran?->nama ?? '');
+        $userRole = strtolower($request->user()->peran ?? '');
 
         // Map english route roles to DB roles
         $roleMap = [
             'admin' => 'admin',
-            'user' => 'pengguna',
+            'user' => 'pelapor',
             'officer' => 'petugas',
         ];
 

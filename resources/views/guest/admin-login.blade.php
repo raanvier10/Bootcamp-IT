@@ -33,6 +33,7 @@
                         <input type="checkbox" name="remember" class="w-4 h-4 rounded border-hairline text-primary focus:ring-primary-soft">
                         Ingat saya
                     </label>
+                    <a href="{{ route('password.request') }}" class="text-sm font-medium text-primary hover:underline">Lupa Password?</a>
                 </div>
                 <button type="submit" class="btn-primary w-full" id="login-submit-btn">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
@@ -40,11 +41,7 @@
                 </button>
             </form>
         </div>
-        <div class="mt-6 p-4 bg-canvas-soft rounded-lg border border-hairline">
-            <p class="text-xs text-mute text-center mb-2">Akun Demo (Admin / Petugas)</p>
-            <p class="text-xs text-body text-center mb-1">Admin: <strong>admin@email.com</strong> | Pass: <strong>password</strong></p>
-            <p class="text-xs text-body text-center">Petugas: <strong>petugas@email.com</strong> | Pass: <strong>password</strong></p>
-        </div>
+
         <div class="mt-6 text-center">
             <a href="{{ route('login') }}" class="text-sm text-mute hover:text-primary transition-colors font-medium">Bukan Petugas? Masuk sebagai Pelapor</a>
         </div>

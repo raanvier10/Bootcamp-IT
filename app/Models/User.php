@@ -19,6 +19,8 @@ class User extends Authenticatable
         'wilayah_id',
         'telepon',
         'foto_profil',
+        'kode_pegawai',
+        'aktif',
     ];
 
     protected $hidden = [

@@ -76,7 +76,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:100', 'unique:users'],
             'phone' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
         ]);
 
         $user = User::create([
@@ -91,6 +91,106 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect('/user/dashboard');
+    }
+
+    /**
+     * Lupa Password - Tampilkan Form Email
+     */
+    public function showForgotPassword()
+    {
+        return view('guest.forgot-password');
+    }
+
+    /**
+     * Lupa Password - Kirim Link (atau OTP/Token)
+     */
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        // Generate 6-digit OTP
+        $otp = (string) random_int(100000, 999999);
+        
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => Hash::make($otp), 'created_at' => now()]
+        );
+
+        // Kirim email OTP
+        \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\ResetOtpMail($otp));
+        
+        return redirect()->route('password.verify.form', ['email' => $request->email])
+            ->with('success', 'Kode OTP 6-angka telah dikirim ke email Anda. Silakan cek Inbox atau folder Spam.');
+    }
+
+    /**
+     * Tampilkan form verifikasi OTP
+     */
+    public function showVerifyOtp(Request $request)
+    {
+        if (!$request->email) return redirect()->route('password.request');
+        return view('guest.verify-otp');
+    }
+
+    /**
+     * Proses verifikasi OTP
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'token' => 'required|numeric|digits:6'
+        ]);
+
+        $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
+            ->where('email', $request->email)->first();
+
+        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+            return back()->withErrors(['token' => 'Kode OTP salah atau sudah kedaluwarsa.']);
+        }
+
+        // Simpan sesi untuk allow akses form ganti password
+        session(['reset_email' => $request->email, 'reset_token' => $request->token]);
+        
+        return redirect()->route('password.reset')->with('success', 'Kode OTP benar! Silakan buat password baru.');
+    }
+
+    /**
+     * Tampilkan form reset password
+     */
+    public function showResetPassword(Request $request)
+    {
+        if (!session('reset_email') || !session('reset_token')) {
+            return redirect()->route('password.request')->withErrors(['email' => 'Sesi reset password tidak valid. Silakan ulangi dari awal.']);
+        }
+        return view('guest.reset-password');
+    }
+
+    /**
+     * Proses reset password (Simpan Password Baru)
+     */
+    public function processResetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
+            'token' => 'required|numeric|digits:6'
+        ]);
+
+        $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
+            ->where('email', $request->email)->first();
+
+        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+            return redirect()->route('password.request')->withErrors(['email' => 'Sesi reset password tidak valid atau kedaluwarsa.']);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        $user->update(['password' => Hash::make($request->password)]);
+
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        session()->forget(['reset_email', 'reset_token']);
+
+        return redirect('/login')->with('success', 'Password berhasil diubah. Silakan login kembali dengan password baru Anda.');
     }
 
     /**

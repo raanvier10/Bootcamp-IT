@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('peran', ['Admin', 'Petugas', 'Pelapor'])->default('Pelapor');
+            $table->string('kode_pegawai', 20)->nullable()->unique();
+            $table->boolean('aktif')->default(true);
             $table->foreignId('wilayah_id')->nullable()->constrained('wilayah')->onDelete('set null');
             $table->string('telepon', 20)->nullable();
             $table->string('foto_profil', 255)->nullable();

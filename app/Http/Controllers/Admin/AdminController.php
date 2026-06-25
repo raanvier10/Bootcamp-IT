@@ -94,7 +94,7 @@ class AdminController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
             'telepon' => 'nullable|string|max:20',
             'wilayah_id' => 'nullable|exists:wilayah,id',
             'aktif' => 'required|boolean',

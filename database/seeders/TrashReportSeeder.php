@@ -65,6 +65,8 @@ class TrashReportSeeder extends Seeder
             'name'                   => 'Petugas Karawang Barat',
             'email'                  => 'petugas.krwbrt@trashreport.id',
             'telepon'                => '081311223344',
+            'kode_pegawai'           => 'PTG-DEMO',
+            'aktif'                  => true,
             'password'               => Hash::make('password'),
             'email_verified_at'      => now(),
             'created_at'             => now(),

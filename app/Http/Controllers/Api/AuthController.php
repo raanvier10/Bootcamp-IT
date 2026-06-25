@@ -75,7 +75,7 @@ class AuthController extends Controller
             'nama' => 'required|string|max:100',
             'email' => 'required|string|email|max:100|unique:users,email',
             'telepon' => 'required|string|max:20',
-            'password' => 'required|min:8',
+            'password' => ['required', 'min:8', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
         ]);
 
         $user = User::create([
@@ -133,7 +133,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $request->validate([
             'password_lama' => 'required',
-            'password_baru' => 'required|min:8|confirmed',
+            'password_baru' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
         ]);
 
         if (!Hash::check($request->password_lama, $user->password)) {
