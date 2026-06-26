@@ -60,8 +60,8 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     });
   }
 
-  void _fetchData() async {
-    setState(() => _isLoading = true);
+  void _fetchData({bool showLoading = true}) async {
+    if (showLoading) setState(() => _isLoading = true);
     final result = await _tugasService.fetchTugas();
     
     try {
@@ -176,7 +176,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     return _isLoading 
         ? Center(child: CircularProgressIndicator(color: primaryColor))
         : RefreshIndicator(
-            onRefresh: () async => _fetchData(),
+            onRefresh: () async => _fetchData(showLoading: true),
             color: primaryColor,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
@@ -386,7 +386,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                                 return GestureDetector(
                                   onTap: () async {
                                     final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => TaskDetailScreen(tugas: tugas)));
-                                    if (result == true) _fetchData();
+                                    if (result == true) _fetchData(showLoading: false);
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
@@ -498,7 +498,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
             ),
             onPressed: () async {
               await Navigator.push(context, MaterialPageRoute(builder: (_) => NotifikasiPetugasScreen()));
-              _fetchData(); // Refresh unread count on return
+              _fetchData(showLoading: false); // Refresh unread count on return
             },
           ),
           const SizedBox(width: 8),
@@ -508,7 +508,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
         index: _currentIndex,
         children: [
           _buildBeranda(),
-          DaftarTugasScreen(tasks: _tasks, onRefresh: _fetchData),
+          DaftarTugasScreen(tasks: _tasks, onRefresh: () => _fetchData(showLoading: true)),
           PetaRuteScreen(tugas: _tasks),
           ProfileScreen(),
         ],
@@ -522,7 +522,12 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
         elevation: 10,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: (index) {
+          setState(() => _currentIndex = index);
+          if (index != 3) {
+            _fetchData(showLoading: false); // Silent refresh when switching tabs
+          }
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), label: 'Dashboard'),
           BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: 'Daftar Tugas'),
