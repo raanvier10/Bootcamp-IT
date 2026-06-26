@@ -243,7 +243,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       initialZoom: 15.0,
                     ),
                     children: [
-                      TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
+                      TileLayer(
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.trashreport.app',
+                      ),
                       MarkerLayer(
                         markers: [
                           Marker(

@@ -79,7 +79,7 @@ class _PetaRuteScreenState extends State<PetaRuteScreen> {
     
     // Filter logic
     List<dynamic> activeTasks = taskList.where((t) {
-      final laporan = t['laporan'] ?? {};
+      final laporan = t;
       String status = (laporan['status'] ?? '').toString().toLowerCase();
       String judul = (laporan['judul'] ?? '').toString().toLowerCase();
       
@@ -118,7 +118,7 @@ class _PetaRuteScreenState extends State<PetaRuteScreen> {
 
     // Add tasks markers
     for (var t in activeTasks) {
-      final laporan = t['laporan'] ?? {};
+      final laporan = t;
       double lat = double.tryParse(laporan['lintang'].toString()) ?? 0;
       double lng = double.tryParse(laporan['bujur'].toString()) ?? 0;
       if (lat != 0 && lng != 0) {
