@@ -110,8 +110,8 @@
         </div>
 
         {{-- Right Column: Execution Form --}}
-        <div class="lg:col-span-1 space-y-6">
-            <div class="bg-canvas border border-hairline rounded-[24px] shadow-card-md p-6 sticky top-24">
+        <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-24 h-max">
+            <div class="bg-canvas border border-hairline rounded-[24px] shadow-card-md p-6">
                 <h4 class="text-lg font-black text-ink mb-2">Panel Eksekusi</h4>
                 <p class="text-sm text-mute font-medium mb-6 pb-6 border-b border-hairline">Ikuti tahapan di bawah ini sesuai urutan kerja di lapangan.</p>
 
