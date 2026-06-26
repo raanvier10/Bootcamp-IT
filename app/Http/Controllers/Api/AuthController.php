@@ -151,4 +151,75 @@ class AuthController extends Controller
             'message' => 'Password berhasil diperbarui.'
         ]);
     }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $otp = (string) random_int(100000, 999999);
+        
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => Hash::make($otp), 'created_at' => now()]
+        );
+
+        \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\ResetOtpMail($otp));
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Kode OTP 6-angka telah dikirim ke email Anda.'
+        ], 200);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'token' => 'required|numeric|digits:6'
+        ]);
+
+        $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
+            ->where('email', $request->email)->first();
+
+        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode OTP salah atau sudah kedaluwarsa.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kode OTP benar.'
+        ], 200);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
+            'token' => 'required|numeric|digits:6'
+        ]);
+
+        $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
+            ->where('email', $request->email)->first();
+
+        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesi reset password tidak valid atau kedaluwarsa.'
+            ], 400);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        $user->update(['password' => Hash::make($request->password)]);
+
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diubah. Silakan login.'
+        ], 200);
+    }
 }

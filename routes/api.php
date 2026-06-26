@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 // Autentikasi untuk Mobile
 Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
+Route::post('/forgot-password', [\App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
+Route::post('/verify-otp', [\App\Http\Controllers\Api\AuthController::class, 'verifyOtp']);
+Route::post('/reset-password', [\App\Http\Controllers\Api\AuthController::class, 'resetPassword']);
 
 Route::get('/artikel', [\App\Http\Controllers\Api\ArtikelController::class, 'index']);
 
