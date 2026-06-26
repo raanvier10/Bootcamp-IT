@@ -47,6 +47,7 @@ dependencies:
   latlong2: ^0.9.1
   url_launcher: ^6.3.2
   flutter_html: ^3.0.0
+  image: ^4.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -105,6 +106,6 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/Group 14.png"
+  image_path: "assets/images/icon_padded_ios.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/Group 14.png"
+  adaptive_icon_foreground: "assets/images/icon_padded.png"
