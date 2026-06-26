@@ -153,79 +153,86 @@ class _DaftarTugasScreenState extends State<DaftarTugasScreen> {
                         final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => TaskDetailScreen(tugas: tugas)));
                         if (result == true) widget.onRefresh();
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: hairlineColor),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 48, height: 48,
-                              decoration: BoxDecoration(color: _getStatusBg(status), borderRadius: BorderRadius.circular(12)),
-                              child: Icon(Icons.assignment_outlined, color: _getStatusColor(status)),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: hairlineColor),
+                              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(laporan['judul'] ?? 'Tugas Pembersihan', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: inkColor, fontSize: 14)),
-                                  const SizedBox(height: 6),
-                                  Wrap(
-                                    spacing: 6, runSpacing: 6,
-                                    crossAxisAlignment: WrapCrossAlignment.center,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 48, height: 48,
+                                  decoration: BoxDecoration(color: _getStatusBg(status), borderRadius: BorderRadius.circular(12)),
+                                  child: Icon(Icons.assignment_outlined, color: _getStatusColor(status)),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(border: Border.all(color: hairlineColor), borderRadius: BorderRadius.circular(4)),
-                                        child: Text(laporan['kode_laporan'] ?? '-', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: muteColor, fontSize: 9)),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 64), // ruang untuk badge
+                                        child: Text(laporan['judul'] ?? 'Tugas Pembersihan', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: inkColor, fontSize: 15, height: 1.2)),
                                       ),
-                                      Icon(Icons.circle, size: 4, color: hairlineColor),
-                                      Text(
-                                        tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'])) : '-', 
-                                        style: GoogleFonts.outfit(color: muteColor, fontSize: 10, fontWeight: FontWeight.w500)
+                                      const SizedBox(height: 10),
+                                      Wrap(
+                                        spacing: 8, runSpacing: 6,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(border: Border.all(color: hairlineColor), borderRadius: BorderRadius.circular(4)),
+                                            child: Text(laporan['kode_laporan'] ?? '-', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: muteColor, fontSize: 9)),
+                                          ),
+                                          Icon(Icons.circle, size: 4, color: hairlineColor),
+                                          Text(
+                                            tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'])) : '-', 
+                                            style: GoogleFonts.outfit(color: muteColor, fontSize: 11, fontWeight: FontWeight.w500)
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.location_on_outlined, size: 14, color: muteColor),
+                                          const SizedBox(width: 4),
+                                          Expanded(child: Text(wilayah['nama'] ?? 'Wilayah Tidak Diketahui', style: GoogleFonts.outfit(color: muteColor, fontSize: 12, fontWeight: FontWeight.w500))),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.location_on_outlined, size: 12, color: muteColor),
-                                      const SizedBox(width: 4),
-                                      Expanded(child: Text(wilayah['nama'] ?? 'Wilayah Tidak Diketahui', style: GoogleFonts.outfit(color: muteColor, fontSize: 11, fontWeight: FontWeight.w500))),
-                                    ],
-                                  ),
-                                ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            top: 16,
+                            right: 16,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _getStatusBg(status),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                status.length > 15 ? status.substring(0, 12) + '...' : status, 
+                                style: GoogleFonts.outfit(
+                                  color: _getStatusColor(status), 
+                                  fontSize: 9, 
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            // Status Badge
-                            Flexible(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: _getStatusBg(status),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                child: Text(
-                                  status.length > 15 ? status.substring(0, 12) + '...' : status, 
-                                  style: GoogleFonts.outfit(
-                                    color: _getStatusColor(status), 
-                                    fontSize: 9, 
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },

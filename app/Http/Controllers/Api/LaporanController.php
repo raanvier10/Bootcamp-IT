@@ -30,6 +30,23 @@ class LaporanController extends Controller
     }
 
     /**
+     * Mendapatkan daftar laporan publik untuk Peta Laporan Sekitar
+     */
+    public function publik()
+    {
+        $laporans = Laporan::with(['kategori', 'wilayah', 'gambar', 'ulasan'])
+            ->orderBy('created_at', 'desc')
+            ->take(200)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar Laporan Publik',
+            'data' => $laporans
+        ], 200);
+    }
+
+    /**
      * Membuat laporan baru (Pelapor)
      */
     public function store(Request $request)

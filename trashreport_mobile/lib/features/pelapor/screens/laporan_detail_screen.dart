@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/api/api_client.dart';
 
 class LaporanDetailScreen extends StatefulWidget {
   final dynamic report;
@@ -21,6 +22,9 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
   final Color textSecondary = const Color(0xFF666666);
   final Color textTertiary = const Color(0xFF999999);
   final Color bgColor = const Color(0xFFF8F9FA);
+
+  bool _isSubmittingUlasan = false;
+  final ApiClient _apiClient = ApiClient();
 
   List<String> _getTimelineSteps(String status) {
     if (status.toLowerCase().contains('ditolak')) {
@@ -88,19 +92,19 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
     if (report['gambar'] != null && report['gambar'] is List && report['gambar'].isNotEmpty) {
       for (var g in report['gambar']) {
         if (g['tipe_gambar'] == 'sebelum' && imgSebelum.isEmpty) {
-          imgSebelum = 'http://127.0.0.1:8000/storage/' + g['jalur_gambar'];
+          imgSebelum = 'https://trashreport.web.id/storage/' + g['jalur_gambar'];
         } else if (g['tipe_gambar'] == 'sesudah' && imgSesudah.isEmpty) {
-          imgSesudah = 'http://127.0.0.1:8000/storage/' + g['jalur_gambar'];
+          imgSesudah = 'https://trashreport.web.id/storage/' + g['jalur_gambar'];
         }
       }
     }
     
     // Fallback if structured differently
     if (imgSebelum.isEmpty && report['foto'] != null) {
-      imgSebelum = 'http://127.0.0.1:8000/storage/' + report['foto'];
+      imgSebelum = 'https://trashreport.web.id/storage/' + report['foto'];
     }
     if (imgSesudah.isEmpty && report['foto_sesudah'] != null) {
-      imgSesudah = 'http://127.0.0.1:8000/storage/' + report['foto_sesudah'];
+      imgSesudah = 'https://trashreport.web.id/storage/' + report['foto_sesudah'];
     }
 
     return Scaffold(
@@ -131,6 +135,14 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
             _buildFotoBuktiCard(imgSebelum, imgSesudah),
             const SizedBox(height: 16),
             _buildRiwayatStatusCard(status, tanggalLapor),
+            
+            // Tampilkan Ulasan jika status Selesai atau Ditutup
+            if (status.toLowerCase().contains('selesai') || status.toLowerCase().contains('ditutup'))
+              ...[
+                const SizedBox(height: 16),
+                _buildUlasanCard(report),
+              ],
+              
             const SizedBox(height: 40),
           ],
         ),
@@ -419,17 +431,22 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: borderDefault),
-                        image: imgSebelum.isNotEmpty 
-                            ? DecorationImage(image: NetworkImage(imgSebelum), fit: BoxFit.cover) 
-                            : null,
+                    GestureDetector(
+                      onTap: imgSebelum.isNotEmpty 
+                        ? () => _showFullScreenImage(context, imgSebelum)
+                        : null,
+                      child: Container(
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: borderDefault),
+                          image: imgSebelum.isNotEmpty 
+                              ? DecorationImage(image: NetworkImage(imgSebelum), fit: BoxFit.cover) 
+                              : null,
+                        ),
+                        child: imgSebelum.isEmpty ? Center(child: Text('Belum tersedia', style: GoogleFonts.outfit(fontSize: 11, color: textSecondary))) : null,
                       ),
-                      child: imgSebelum.isEmpty ? Center(child: Text('Belum tersedia', style: GoogleFonts.outfit(fontSize: 11, color: textSecondary))) : null,
                     )
                   ],
                 ),
@@ -447,17 +464,22 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: borderDefault),
-                        image: imgSesudah.isNotEmpty 
-                            ? DecorationImage(image: NetworkImage(imgSesudah), fit: BoxFit.cover) 
-                            : null,
+                    GestureDetector(
+                      onTap: imgSesudah.isNotEmpty
+                        ? () => _showFullScreenImage(context, imgSesudah)
+                        : null,
+                      child: Container(
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: borderDefault),
+                          image: imgSesudah.isNotEmpty 
+                              ? DecorationImage(image: NetworkImage(imgSesudah), fit: BoxFit.cover) 
+                              : null,
+                        ),
+                        child: imgSesudah.isEmpty ? Center(child: Text('Belum tersedia', style: GoogleFonts.outfit(fontSize: 11, color: textSecondary))) : null,
                       ),
-                      child: imgSesudah.isEmpty ? Center(child: Text('Belum tersedia', style: GoogleFonts.outfit(fontSize: 11, color: textSecondary))) : null,
                     )
                   ],
                 ),
@@ -502,5 +524,212 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
         ],
       )
     );
+  }
+
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.9),
+      builder: (BuildContext context) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              boundaryMargin: const EdgeInsets.all(20),
+              minScale: 0.5,
+              maxScale: 4,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 24),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildUlasanCard(dynamic report) {
+    var ulasan = report['ulasan'];
+    
+    if (ulasan != null) {
+      // Sudah dinilai
+      return _buildCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Penilaian Anda', style: GoogleFonts.outfit(color: textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Row(
+              children: List.generate(5, (index) => Icon(
+                index < (ulasan['nilai'] ?? 0) ? Icons.star_rounded : Icons.star_border_rounded,
+                color: Colors.amber,
+                size: 24,
+              )),
+            ),
+            if (ulasan['komentar'] != null && ulasan['komentar'].toString().isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+                child: Text(ulasan['komentar'], style: GoogleFonts.outfit(color: textSecondary, fontSize: 13, fontStyle: FontStyle.italic)),
+              )
+            ]
+          ],
+        )
+      );
+    } else {
+      // Belum dinilai
+      return _buildCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.star_outline_rounded, size: 48, color: Colors.amber.shade300),
+            const SizedBox(height: 12),
+            Text('Beri Penilaian', style: GoogleFonts.outfit(color: textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text('Bantu kami meningkatkan layanan dengan memberikan ulasan kinerja petugas.', textAlign: TextAlign.center, style: GoogleFonts.outfit(color: textSecondary, fontSize: 12)),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isSubmittingUlasan ? null : () => _showUlasanDialog(report['id']),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
+                ),
+                child: Text('Tulis Ulasan', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            )
+          ],
+        )
+      );
+    }
+  }
+
+  void _showUlasanDialog(int laporanId) {
+    int rating = 5;
+    TextEditingController komentarCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+                top: 24, left: 24, right: 24
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(width: 40, height: 4, decoration: BoxDecoration(color: borderDefault, borderRadius: BorderRadius.circular(2))),
+                  const SizedBox(height: 24),
+                  Text('Beri Penilaian', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: textPrimary)),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return GestureDetector(
+                        onTap: () => setModalState(() => rating = index + 1),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(
+                            index < rating ? Icons.star_rounded : Icons.star_border_rounded,
+                            color: Colors.amber,
+                            size: 40,
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: komentarCtrl,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: 'Tulis komentar Anda (opsional)...',
+                      hintStyle: GoogleFonts.outfit(color: textTertiary),
+                      filled: true,
+                      fillColor: bgColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderDefault)),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderDefault)),
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _submitUlasan(laporanId, rating, komentarCtrl.text);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+                      ),
+                      child: Text('Kirim Penilaian', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    ),
+                  )
+                ],
+              ),
+            );
+          }
+        );
+      }
+    );
+  }
+
+  Future<void> _submitUlasan(int laporanId, int rating, String komentar) async {
+    setState(() => _isSubmittingUlasan = true);
+    try {
+      final response = await _apiClient.dio.post('/pelapor/laporan/$laporanId/ulasan', data: {
+        'nilai': rating,
+        'komentar': komentar,
+      });
+
+      if (response.data['success'] == true) {
+        // Update local report data
+        setState(() {
+          widget.report['ulasan'] = response.data['data'];
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ulasan berhasil dikirim!', style: GoogleFonts.outfit()), backgroundColor: primaryColor));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.data['message'] ?? 'Gagal mengirim ulasan.', style: GoogleFonts.outfit()), backgroundColor: Colors.red));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Terjadi kesalahan jaringan.', style: GoogleFonts.outfit()), backgroundColor: Colors.red));
+    } finally {
+      setState(() => _isSubmittingUlasan = false);
+    }
   }
 }

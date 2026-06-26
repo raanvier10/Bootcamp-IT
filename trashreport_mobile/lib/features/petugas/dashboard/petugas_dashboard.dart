@@ -465,7 +465,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
         elevation: 0,
         title: Row(
           children: [
-            Image.asset('assets/images/Group 14.png', width: 32, height: 32, fit: BoxFit.contain),
+            Image.asset('assets/images/Group 4.png', width: 32, height: 32, fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) => const Icon(Icons.eco, color: Color(0xFF0D530E))),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

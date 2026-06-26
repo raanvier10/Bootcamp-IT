@@ -80,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 4),
                           boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)],
-                          image: _userFoto.isNotEmpty ? DecorationImage(image: NetworkImage('http://127.0.0.1:8000/storage/$_userFoto'), fit: BoxFit.cover) : null,
+                          image: _userFoto.isNotEmpty ? DecorationImage(image: NetworkImage('https://trashreport.web.id/storage/$_userFoto'), fit: BoxFit.cover) : null,
                         ),
                         child: _userFoto.isEmpty ? const Icon(Icons.person_rounded, size: 60, color: primaryColor) : null,
                       ),

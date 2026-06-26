@@ -41,6 +41,7 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
   bool _isLoading = true;
   
   List<dynamic> _reports = [];
+  List<dynamic> _publicReports = [];
   List<dynamic> _articles = [];
   
   final LaporanService _laporanService = LaporanService();
@@ -61,6 +62,8 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
     'selesai': 0,
     'ditolak': 0,
   };
+
+  String? _riwayatFilter;
 
   int _unreadNotifCount = 0;
   final ApiClient _apiClient = ApiClient();
@@ -86,7 +89,12 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
 
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
-    final result = await _laporanService.fetchLaporan();
+    final results = await Future.wait([
+      _laporanService.fetchLaporan(),
+      _laporanService.fetchLaporanPublik()
+    ]);
+    final result = results[0];
+    final resultPublic = results[1];
     
     try {
       final notifResp = await _apiClient.dio.get('/pelapor/notifikasi');
@@ -111,6 +119,7 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
     if (mounted) {
       setState(() {
         _reports = result;
+        _publicReports = resultPublic;
         _stats = {
           'total': result.length,
           'menunggu': menunggu,
@@ -249,36 +258,44 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
             const SizedBox(height: 16),
             
             // Total Laporan Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              decoration: BoxDecoration(
-                color: primaryColor, // Dark green
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: primaryColor.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 8))],
-              ),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Positioned(
-                    right: -10, bottom: -30,
-                    child: Icon(Icons.description_rounded, size: 100, color: Colors.white.withOpacity(0.08)),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.description_outlined, color: Colors.white, size: 20),
-                          const SizedBox(width: 8),
-                          Text('TOTAL LAPORAN', style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text('${_stats['total']}', style: GoogleFonts.outfit(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold, height: 1)),
-                    ],
-                  ),
-                ],
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _riwayatFilter = 'Semua Laporan';
+                  _currentIndex = 3; // Go to Riwayat tab
+                });
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                decoration: BoxDecoration(
+                  color: primaryColor, // Dark green
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [BoxShadow(color: primaryColor.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 8))],
+                ),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      right: -10, bottom: -30,
+                      child: Icon(Icons.description_rounded, size: 100, color: Colors.white.withOpacity(0.08)),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.description_outlined, color: Colors.white, size: 20),
+                            const SizedBox(width: 8),
+                            Text('TOTAL LAPORAN', style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text('${_stats['total']}', style: GoogleFonts.outfit(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold, height: 1)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -293,10 +310,10 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
               crossAxisSpacing: 8,
               childAspectRatio: 1.9,
               children: [
-                _buildSmallStatCard('MENUNGGU', _stats['menunggu']!, Icons.access_time_rounded, const Color(0xFFD97706)),
-                _buildSmallStatCard('SEDANG DIBERSIHKAN', _stats['diproses']!, Icons.blur_on, const Color(0xFF2563EB)),
-                _buildSmallStatCard('SELESAI', _stats['selesai']!, Icons.check_circle_outline_rounded, primaryColor),
-                _buildSmallStatCard('DITOLAK', _stats['ditolak']!, Icons.cancel_outlined, const Color(0xFFDC2626)),
+                _buildSmallStatCard('MENUNGGU', _stats['menunggu']!, Icons.access_time_rounded, const Color(0xFFD97706), 'Menunggu'),
+                _buildSmallStatCard('SEDANG DIBERSIHKAN', _stats['diproses']!, Icons.blur_on, const Color(0xFF2563EB), 'Sedang Dibersihkan'),
+                _buildSmallStatCard('SELESAI', _stats['selesai']!, Icons.check_circle_outline_rounded, primaryColor, 'Selesai'),
+                _buildSmallStatCard('DITOLAK', _stats['ditolak']!, Icons.cancel_outlined, const Color(0xFFDC2626), 'Ditolak'),
               ],
             ),
             const SizedBox(height: 20),
@@ -323,7 +340,12 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
                           children: [
                             Text('Riwayat Terbaru', style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: textPrimary, letterSpacing: -0.5)),
                             GestureDetector(
-                              onTap: () => setState(() => _currentIndex = 3),
+                              onTap: () {
+                                setState(() {
+                                  _riwayatFilter = 'Semua Laporan';
+                                  _currentIndex = 3;
+                                });
+                              },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -406,7 +428,7 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
                       userAgentPackageName: 'com.trashreport.app',
                     ),
                     MarkerLayer(
-                      markers: _reports.map((r) {
+                      markers: (_publicReports.isNotEmpty ? _publicReports : _reports).map((r) {
                         if (r['lintang'] != null && r['bujur'] != null) {
                           double lat = double.tryParse(r['lintang'].toString()) ?? 0;
                           double lng = double.tryParse(r['bujur'].toString()) ?? 0;
@@ -486,30 +508,38 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
     ); // SafeArea
   }
 
-  Widget _buildSmallStatCard(String title, int count, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: neutral50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderDefault, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: color, size: 18),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(title, style: GoogleFonts.outfit(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5), maxLines: 1, overflow: TextOverflow.ellipsis),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text('$count', style: GoogleFonts.outfit(color: textPrimary, fontSize: 24, fontWeight: FontWeight.bold, height: 1)),
-        ],
+  Widget _buildSmallStatCard(String title, int count, IconData icon, Color color, String filterValue) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _riwayatFilter = filterValue;
+          _currentIndex = 3; // Go to Riwayat tab
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: neutral50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderDefault, width: 1.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 18),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(title, style: GoogleFonts.outfit(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5), maxLines: 1, overflow: TextOverflow.ellipsis),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text('$count', style: GoogleFonts.outfit(color: textPrimary, fontSize: 24, fontWeight: FontWeight.bold, height: 1)),
+          ],
+        ),
       ),
     );
   }
@@ -617,7 +647,8 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
   }
 
   Widget _buildFullMap() {
-    List<dynamic> filteredReports = _reports.where((r) {
+    List<dynamic> sourceReports = _publicReports.isNotEmpty ? _publicReports : _reports;
+    List<dynamic> filteredReports = sourceReports.where((r) {
       String status = r['status'].toString().toLowerCase();
       bool matchStatus = false;
       if (_mapFilterStatus == 'Semua') {
@@ -917,7 +948,7 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
               _buildBeranda(),
               _buildFullMap(), // Map view
               Container(), // Placeholder for FAB
-              RiwayatScreen(reports: _reports, onRefresh: _fetchData),
+              RiwayatScreen(reports: _reports, onRefresh: _fetchData, initialFilter: _riwayatFilter),
               ProfileScreen(),
             ],
           ),
@@ -963,7 +994,13 @@ class _PelaporDashboardState extends State<PelaporDashboard> {
   Widget _buildTabIcon(IconData icon, String label, int index) {
     bool isSelected = _currentIndex == index;
     return InkWell(
-      onTap: () => setState(() => _currentIndex = index),
+      onTap: () {
+        setState(() => _currentIndex = index);
+        // Refresh data secara diam-diam (background) tiap pindah tab
+        if (index == 0 || index == 1 || index == 3) {
+          _fetchData();
+        }
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1036,7 +1073,8 @@ class _ArtikelCarouselState extends State<_ArtikelCarousel> {
             itemCount: widget.articles.length,
             itemBuilder: (context, index) {
               var article = widget.articles[index];
-              String imageUrl = article['gambar_sampul'] != null ? 'http://127.0.0.1:8000/storage/' + article['gambar_sampul'] : '';
+              String rawGambar = article['gambar_sampul']?.toString() ?? '';
+              String imageUrl = rawGambar.isEmpty ? '' : (rawGambar.startsWith('http') ? rawGambar : (rawGambar.startsWith('/storage/') ? 'https://trashreport.web.id$rawGambar' : (rawGambar.startsWith('storage/') ? 'https://trashreport.web.id/$rawGambar' : (rawGambar.startsWith('/') ? 'https://trashreport.web.id/storage$rawGambar' : 'https://trashreport.web.id/storage/$rawGambar'))));
               String date = article['diterbitkan_pada'] != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(article['diterbitkan_pada'])) : 'Baru';
 
               return AnimatedBuilder(
@@ -1059,7 +1097,7 @@ class _ArtikelCarouselState extends State<_ArtikelCarousel> {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => ArtikelDetailScreen(artikel: article)));
                   },
                   child: Container(
-                    margin: const EdgeInsets.only(right: 16, bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
                       color: surfaceColor,
                       borderRadius: BorderRadius.circular(16),

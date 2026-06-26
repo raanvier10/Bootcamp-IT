@@ -36,7 +36,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     String status = (laporan['status'] ?? '').toString().toLowerCase();
     if (status == 'dalam perjalanan') _currentStep = 1;
     if (status == 'sedang dibersihkan' || status == 'sedang dikerjakan') _currentStep = 2;
-    if (status == 'selesai') _currentStep = 3;
+    if (status == 'selesai' || status == 'ditutup') _currentStep = 2;
   }
 
   void _pickImage() async {
@@ -91,7 +91,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
       if (response.statusCode == 200) {
         setState(() {
-          _currentStep = 3;
+          _currentStep = 2;
           widget.tugas['laporan']['status'] = 'Selesai';
         });
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tugas Selesai!')));
@@ -124,11 +124,23 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget build(BuildContext context) {
     final laporan = widget.tugas;
     final status = (laporan['status'] ?? 'DITUGASKAN').toString().toUpperCase();
-    final isSelesai = status == 'SELESAI';
+    final isSelesai = status == 'SELESAI' || status == 'DITUTUP';
 
     double lat = double.tryParse(laporan['lintang'].toString()) ?? -6.200000;
     double lng = double.tryParse(laporan['bujur'].toString()) ?? 106.816666;
     LatLng location = LatLng(lat, lng);
+
+    String imgSebelum = '';
+    String imgSesudah = '';
+    
+    if (laporan['gambar'] != null && laporan['gambar'] is List) {
+      for (var g in laporan['gambar']) {
+        if (g['tipe_gambar'] == 'sebelum' && imgSebelum.isEmpty) imgSebelum = 'https://trashreport.web.id/storage/' + g['jalur_gambar'];
+        if (g['tipe_gambar'] == 'sesudah' && imgSesudah.isEmpty) imgSesudah = 'https://trashreport.web.id/storage/' + g['jalur_gambar'];
+      }
+    }
+    if (imgSebelum.isEmpty && laporan['foto'] != null) imgSebelum = 'https://trashreport.web.id/storage/' + laporan['foto'];
+    if (imgSesudah.isEmpty && laporan['foto_sesudah'] != null) imgSesudah = 'https://trashreport.web.id/storage/' + laporan['foto_sesudah'];
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -147,7 +159,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(flex: 7, child: _buildLeftColumn(laporan, location, status)),
+                  Expanded(flex: 7, child: _buildLeftColumn(laporan, location, status, imgSebelum, imgSesudah)),
                   const SizedBox(width: 24),
                   Expanded(flex: 4, child: _buildRightColumn(isSelesai)),
                 ],
@@ -159,7 +171,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildLeftColumn(laporan, location, status),
+                _buildLeftColumn(laporan, location, status, imgSebelum, imgSesudah),
                 const SizedBox(height: 16),
                 _buildRightColumn(isSelesai),
               ],
@@ -170,7 +182,42 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 
-  Widget _buildLeftColumn(dynamic laporan, LatLng location, String status) {
+  void _showFullScreenImage(BuildContext context, dynamic imageSource, {bool isFile = false}) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.9),
+      builder: (BuildContext context) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              boundaryMargin: const EdgeInsets.all(20),
+              minScale: 0.5,
+              maxScale: 4,
+              child: isFile 
+                ? Image.file(imageSource as File, fit: BoxFit.contain, width: double.infinity, height: double.infinity)
+                : Image.network(imageSource.toString(), fit: BoxFit.contain, width: double.infinity, height: double.infinity),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), shape: BoxShape.circle),
+                  child: const Icon(Icons.close, color: Colors.white, size: 24),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLeftColumn(dynamic laporan, LatLng location, String status, String imgSebelum, String imgSesudah) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -364,8 +411,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             child: Container(
                               height: 180, width: double.infinity,
                               color: bgColor,
-                              child: laporan['foto'] != null 
-                                ? Image.network('http://127.0.0.1:8000/storage/' + laporan['foto'], fit: BoxFit.cover, errorBuilder: (_,__,___) => Icon(Icons.image_not_supported, color: muteColor))
+                              child: imgSebelum.isNotEmpty
+                                ? GestureDetector(
+                                    onTap: () => _showFullScreenImage(context, imgSebelum),
+                                    child: Image.network(imgSebelum, fit: BoxFit.cover, errorBuilder: (_,__,___) => Icon(Icons.image_not_supported, color: muteColor)),
+                                  )
                                 : Icon(Icons.image_not_supported, color: muteColor),
                             ),
                           ),
@@ -390,15 +440,23 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                 border: Border.all(color: hairlineColor, style: BorderStyle.solid),
                               ),
                               child: _image != null 
-                                ? Image.file(_image!, fit: BoxFit.cover) 
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.access_time, color: muteColor, size: 32),
-                                      const SizedBox(height: 8),
-                                      Text('Belum ada foto sesudah', style: GoogleFonts.outfit(color: muteColor, fontSize: 12)),
-                                    ],
-                                  ),
+                                ? GestureDetector(
+                                    onTap: () => _showFullScreenImage(context, _image!, isFile: true),
+                                    child: Image.file(_image!, fit: BoxFit.cover),
+                                  )
+                                : (imgSesudah.isNotEmpty
+                                  ? GestureDetector(
+                                      onTap: () => _showFullScreenImage(context, imgSesudah),
+                                      child: Image.network(imgSesudah, fit: BoxFit.cover, errorBuilder: (_,__,___) => Icon(Icons.image_not_supported, color: muteColor)),
+                                    )
+                                  : Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.access_time, color: muteColor, size: 32),
+                                        const SizedBox(height: 8),
+                                        Text('Belum ada foto sesudah', style: GoogleFonts.outfit(color: muteColor, fontSize: 12)),
+                                      ],
+                                    )),
                             ),
                           ),
                         ],
@@ -492,8 +550,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ),
                 Step(
                   title: Text('Penutupan Tugas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: inkColor)),
-                  subtitle: Text(_currentStep < 2 ? 'Form akan terbuka setelah tahap sebelumnya selesai.' : (_currentStep == 3 ? 'Tugas diselesaikan' : 'Ambil foto bukti pekerjaan'), style: GoogleFonts.outfit(color: muteColor, fontSize: 11)),
-                  content: _currentStep == 2
+                  subtitle: Text(_currentStep < 2 ? 'Form akan terbuka setelah tahap sebelumnya selesai.' : (isSelesai ? 'Tugas diselesaikan' : 'Ambil foto bukti pekerjaan'), style: GoogleFonts.outfit(color: muteColor, fontSize: 11)),
+                  content: (_currentStep == 2 && !isSelesai)
                     ? Padding(
                         padding: const EdgeInsets.only(top: 16),
                         child: Column(
@@ -527,13 +585,70 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           ],
                         ),
                       )
-                    : const SizedBox.shrink(),
+                    : (isSelesai 
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(color: const Color(0xFF10B981).withOpacity(0.1), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF10B981).withOpacity(0.3))),
+                              child: Column(
+                                children: [
+                                  const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 40),
+                                  const SizedBox(height: 8),
+                                  Text('Tugas Selesai', style: GoogleFonts.outfit(color: const Color(0xFF047857), fontWeight: FontWeight.bold, fontSize: 16)),
+                                  Text('Terima kasih atas kerja keras Anda.', style: GoogleFonts.outfit(color: const Color(0xFF047857), fontSize: 12)),
+                                ],
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink()),
                   isActive: _currentStep >= 2,
-                  state: _currentStep > 2 ? StepState.complete : StepState.indexed,
+                  state: isSelesai ? StepState.complete : StepState.indexed,
                 ),
               ],
             ),
-          )
+          ),
+
+          if (widget.tugas['ulasan'] != null) ...[
+            const SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEF3C7).withOpacity(0.3), // Amber soft
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.amber.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber, size: 24),
+                      const SizedBox(width: 8),
+                      Text('Ulasan Pelapor', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: inkColor)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: List.generate(5, (index) => Icon(
+                      index < (widget.tugas['ulasan']['nilai'] ?? 0) ? Icons.star_rounded : Icons.star_border_rounded,
+                      color: Colors.amber,
+                      size: 20,
+                    )),
+                  ),
+                  if (widget.tugas['ulasan']['komentar'] != null && widget.tugas['ulasan']['komentar'].toString().isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      '"${widget.tugas['ulasan']['komentar']}"',
+                      style: GoogleFonts.outfit(color: muteColor, fontSize: 13, fontStyle: FontStyle.italic),
+                    ),
+                  ]
+                ],
+              ),
+            )
+          ]
         ],
       ),
     );

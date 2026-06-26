@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../../petugas/dashboard/petugas_dashboard.dart';
 import '../../pelapor/dashboard/pelapor_dashboard.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 // ── Colors ──
 const Color primary500 = Color(0xFF0D530E);
@@ -206,12 +207,27 @@ class _LoginScreenState extends State<LoginScreen>
                         const SizedBox(height: 16),
                         Align(
                           alignment: Alignment.centerRight,
-                          child: Text(
-                            'Lupa Password?',
-                            style: GoogleFonts.outfit(
-                              color: primary500,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ForgotPasswordScreen(),
+                                ),
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Lupa Password?',
+                              style: GoogleFonts.outfit(
+                                color: primary500,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ),

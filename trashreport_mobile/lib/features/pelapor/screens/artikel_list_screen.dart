@@ -36,7 +36,8 @@ class ArtikelListScreen extends StatelessWidget {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 var article = articles[index];
-                String imageUrl = article['gambar_sampul'] != null ? 'http://127.0.0.1:8000/storage/' + article['gambar_sampul'] : '';
+                String rawGambar = article['gambar_sampul']?.toString() ?? '';
+                String imageUrl = rawGambar.isEmpty ? '' : (rawGambar.startsWith('http') ? rawGambar : (rawGambar.startsWith('/storage/') ? 'https://trashreport.web.id$rawGambar' : (rawGambar.startsWith('storage/') ? 'https://trashreport.web.id/$rawGambar' : (rawGambar.startsWith('/') ? 'https://trashreport.web.id/storage$rawGambar' : 'https://trashreport.web.id/storage/$rawGambar'))));
                 String date = article['diterbitkan_pada'] != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(article['diterbitkan_pada'])) : 'Baru';
                 
                 // Variasi kategori untuk tampilan

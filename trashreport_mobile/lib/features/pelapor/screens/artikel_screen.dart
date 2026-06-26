@@ -48,12 +48,12 @@ class _ArtikelScreenState extends State<ArtikelScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (artikel['gambar'] != null)
+                        if (artikel['gambar_sampul'] != null)
                           Container(
                             height: 150, width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                              image: DecorationImage(image: NetworkImage('http://127.0.0.1:8000/storage/' + artikel['gambar']), fit: BoxFit.cover),
+                              image: DecorationImage(image: NetworkImage(artikel['gambar_sampul'].toString().startsWith('http') ? artikel['gambar_sampul'] : (artikel['gambar_sampul'].toString().startsWith('/storage/') ? 'https://trashreport.web.id' + artikel['gambar_sampul'] : (artikel['gambar_sampul'].toString().startsWith('storage/') ? 'https://trashreport.web.id/' + artikel['gambar_sampul'] : (artikel['gambar_sampul'].toString().startsWith('/') ? 'https://trashreport.web.id/storage' + artikel['gambar_sampul'] : 'https://trashreport.web.id/storage/' + artikel['gambar_sampul'])))), fit: BoxFit.cover),
                             ),
                           ),
                         Padding(

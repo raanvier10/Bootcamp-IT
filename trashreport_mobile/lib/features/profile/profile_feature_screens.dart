@@ -129,7 +129,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         shape: BoxShape.circle,
                         image: _pickedImage != null 
                           ? (kIsWeb ? DecorationImage(image: NetworkImage(_pickedImage!.path), fit: BoxFit.cover) : DecorationImage(image: FileImage(File(_pickedImage!.path)), fit: BoxFit.cover))
-                          : (_existingFoto != null ? DecorationImage(image: NetworkImage('http://127.0.0.1:8000/storage/$_existingFoto'), fit: BoxFit.cover) : null),
+                          : (_existingFoto != null ? DecorationImage(image: NetworkImage('https://trashreport.web.id/storage/$_existingFoto'), fit: BoxFit.cover) : null),
                       ),
                       child: (_pickedImage == null && _existingFoto == null) ? const Icon(Icons.person, size: 60, color: Colors.white) : null,
                     ),

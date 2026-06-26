@@ -6,16 +6,31 @@ import 'laporan_detail_screen.dart';
 class RiwayatScreen extends StatefulWidget {
   final List<dynamic> reports;
   final VoidCallback onRefresh;
+  final String? initialFilter;
 
-  const RiwayatScreen({Key? key, required this.reports, required this.onRefresh}) : super(key: key);
+  const RiwayatScreen({Key? key, required this.reports, required this.onRefresh, this.initialFilter}) : super(key: key);
 
   @override
   _RiwayatScreenState createState() => _RiwayatScreenState();
 }
 
 class _RiwayatScreenState extends State<RiwayatScreen> {
-  String _selectedFilter = 'Semua Laporan';
+  late String _selectedFilter;
   final List<String> _filters = ['Semua Laporan', 'Menunggu', 'Sedang Dibersihkan', 'Selesai', 'Ditolak'];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedFilter = widget.initialFilter ?? 'Semua Laporan';
+  }
+
+  @override
+  void didUpdateWidget(RiwayatScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialFilter != oldWidget.initialFilter && widget.initialFilter != null) {
+      _selectedFilter = widget.initialFilter!;
+    }
+  }
 
   Color _getStatusColor(String status) {
     String s = status.toLowerCase();
@@ -37,11 +52,11 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
     if (report['gambar'] != null && report['gambar'] is List && report['gambar'].isNotEmpty) {
       for (var g in report['gambar']) {
         if (g['tipe_gambar'] == 'sebelum') {
-          return 'http://127.0.0.1:8000/storage/' + g['jalur_gambar'];
+          return 'https://trashreport.web.id/storage/' + g['jalur_gambar'];
         }
       }
     }
-    if (report['foto'] != null) return 'http://127.0.0.1:8000/storage/' + report['foto'];
+    if (report['foto'] != null) return 'https://trashreport.web.id/storage/' + report['foto'];
     return '';
   }
 

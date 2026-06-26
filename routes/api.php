@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // API Khusus Pelapor
     Route::prefix('pelapor')->group(function () {
+        Route::get('/laporan/publik', [\App\Http\Controllers\Api\LaporanController::class, 'publik']);
         Route::get('/laporan', [\App\Http\Controllers\Api\LaporanController::class, 'index']);
         Route::post('/laporan', [\App\Http\Controllers\Api\LaporanController::class, 'store']);
         Route::post('/laporan/{id}/ulasan', [\App\Http\Controllers\Api\LaporanController::class, 'storeUlasan']);

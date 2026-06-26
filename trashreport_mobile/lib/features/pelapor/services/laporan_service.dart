@@ -14,4 +14,16 @@ class LaporanService {
       return [];
     }
   }
+
+  Future<List<dynamic>> fetchLaporanPublik() async {
+    try {
+      final response = await _apiClient.dio.get('/pelapor/laporan/publik');
+      if (response.statusCode == 200) {
+        return response.data['data'] as List<dynamic>;
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
 }
