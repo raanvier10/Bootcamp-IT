@@ -421,7 +421,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                                                   ),
                                                   Icon(Icons.circle, size: 4, color: muteColor),
                                                   Text(
-                                                    tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'])) : '-', 
+                                                    tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'].toString().endsWith('Z') ? tugas['updated_at'].toString() : tugas['updated_at'].toString() + 'Z').toLocal()) : '-', 
                                                     style: GoogleFonts.outfit(color: muteColor, fontSize: 10, fontWeight: FontWeight.w500)
                                                   ),
                                                 ],

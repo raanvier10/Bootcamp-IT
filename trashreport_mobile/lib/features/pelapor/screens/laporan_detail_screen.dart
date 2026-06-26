@@ -80,7 +80,7 @@ class _LaporanDetailScreenState extends State<LaporanDetailScreen> {
     String alamat = _safeString(report['alamat'], 'Lokasi tidak diketahui');
     
     String dateStr = report['dilaporkan_pada'] ?? report['created_at'];
-    String tanggalLapor = dateStr != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(dateStr)) : '-';
+    String tanggalLapor = dateStr != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(dateStr.toString().endsWith('Z') ? dateStr.toString() : dateStr.toString() + 'Z').toLocal()) : '-';
 
     double lat = double.tryParse(report['lintang']?.toString() ?? '0') ?? 0;
     double lng = double.tryParse(report['bujur']?.toString() ?? '0') ?? 0;

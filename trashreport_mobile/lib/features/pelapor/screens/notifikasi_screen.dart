@@ -91,7 +91,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                   itemBuilder: (context, index) {
                     final notif = _notifikasi[index];
                     bool isRead = notif['sudah_dibaca'] == true || notif['sudah_dibaca'] == 1;
-                    String timeStr = notif['dibuat_pada'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(notif['dibuat_pada'])) : '';
+                    String timeStr = notif['dibuat_pada'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(notif['dibuat_pada'].toString().endsWith('Z') ? notif['dibuat_pada'].toString() : notif['dibuat_pada'].toString() + 'Z').toLocal()) : '';
 
                     return GestureDetector(
                       onTap: () {

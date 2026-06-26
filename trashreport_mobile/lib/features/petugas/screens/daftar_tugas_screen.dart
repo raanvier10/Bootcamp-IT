@@ -193,7 +193,7 @@ class _DaftarTugasScreenState extends State<DaftarTugasScreen> {
                                           ),
                                           Icon(Icons.circle, size: 4, color: hairlineColor),
                                           Text(
-                                            tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'])) : '-', 
+                                            tugas['updated_at'] != null ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(tugas['updated_at'].toString().endsWith('Z') ? tugas['updated_at'].toString() : tugas['updated_at'].toString() + 'Z').toLocal()) : '-', 
                                             style: GoogleFonts.outfit(color: muteColor, fontSize: 11, fontWeight: FontWeight.w500)
                                           ),
                                         ],
