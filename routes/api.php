@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('pelapor')->group(function () {
         Route::get('/laporan', [\App\Http\Controllers\Api\LaporanController::class, 'index']);
         Route::post('/laporan', [\App\Http\Controllers\Api\LaporanController::class, 'store']);
+        Route::post('/laporan/{id}/ulasan', [\App\Http\Controllers\Api\LaporanController::class, 'storeUlasan']);
         
         Route::get('/notifikasi', [\App\Http\Controllers\Api\NotifikasiController::class, 'index']);
         Route::post('/notifikasi/{id}/baca', [\App\Http\Controllers\Api\NotifikasiController::class, 'markAsRead']);

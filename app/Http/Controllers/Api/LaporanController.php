@@ -17,7 +17,7 @@ class LaporanController extends Controller
     {
         $user = Auth::user();
         
-        $laporans = Laporan::with(['kategori', 'wilayah', 'gambar'])
+        $laporans = Laporan::with(['kategori', 'wilayah', 'gambar', 'ulasan'])
             ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -95,5 +95,43 @@ class LaporanController extends Controller
             'message' => 'Laporan berhasil dibuat',
             'data' => $laporan
         ], 201);
+    }
+
+    /**
+     * Memberikan ulasan/rating untuk laporan yang sudah selesai
+     */
+    public function storeUlasan(Request $request, $id)
+    {
+        $request->validate([
+            'nilai' => 'required|integer|min:1|max:5',
+            'komentar' => 'nullable|string|max:1000'
+        ]);
+
+        $user = Auth::user();
+        $laporan = Laporan::where('id', $id)->where('user_id', $user->id)->first();
+
+        if (!$laporan) {
+            return response()->json(['success' => false, 'message' => 'Laporan tidak ditemukan.'], 404);
+        }
+
+        if (!in_array(strtolower($laporan->status), ['selesai', 'ditutup'])) {
+            return response()->json(['success' => false, 'message' => 'Hanya laporan yang selesai yang dapat diberikan rating.'], 400);
+        }
+
+        $ulasan = \App\Models\Ulasan::updateOrCreate(
+            ['laporan_id' => $laporan->id],
+            [
+                'user_id' => $user->id,
+                'nilai' => $request->nilai,
+                'komentar' => $request->komentar,
+                'dibuat_pada' => now()
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Terima kasih atas penilaian Anda!',
+            'data' => $ulasan
+        ]);
     }
 }
