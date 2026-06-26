@@ -5,25 +5,29 @@
 <div class="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
     
     {{-- Header Profile Card --}}
-    <div class="relative overflow-hidden bg-canvas rounded-[24px] shadow-card-md border border-hairline">
-        <div class="absolute inset-0 h-32 bg-gradient-to-r from-primary to-[#094009] opacity-90"></div>
+    <div class="bg-canvas rounded-[24px] border border-hairline shadow-card-md overflow-hidden relative">
+        <div class="h-32 bg-gradient-to-r from-primary to-[#094009] opacity-90 relative">
+            <div class="absolute inset-0 bg-black/10"></div>
+        </div>
         
-        <div class="relative px-8 pt-20 pb-8 flex flex-col sm:flex-row items-center sm:items-end gap-6 text-center sm:text-left">
-            <div class="relative group">
-                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" id="avatar-preview" class="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white bg-white transition-transform group-hover:scale-105">
-                <button type="button" onclick="document.getElementById('avatar').click()" class="absolute bottom-1 right-1 w-9 h-9 bg-white rounded-full shadow-md border border-hairline flex items-center justify-center text-primary hover:bg-canvas-soft hover:scale-110 transition-all cursor-pointer z-10">
-                    <i data-lucide="camera" class="w-4.5 h-4.5"></i>
-                </button>
-            </div>
-            
-            <div class="flex-1 pb-2">
-                <h2 class="text-2xl font-black text-ink tracking-tight">{{ $user->name }}</h2>
-                <p class="text-sm font-medium text-mute mt-1">{{ $user->email }}</p>
-                <div class="flex items-center justify-center sm:justify-start gap-2 mt-3">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-soft text-primary text-[10px] sm:text-xs font-bold border border-primary/20">
-                        <i data-lucide="shield-check" class="w-3 h-3"></i> Akun Terverifikasi
-                    </span>
-                    <span class="text-xs text-mute font-medium hidden sm:inline-block">Sejak {{ $user->created_at->format('M Y') }}</span>
+        <div class="px-8 pb-8">
+            <div class="relative -mt-16 mb-6 text-center sm:text-left">
+                <div class="relative group inline-block mb-4">
+                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" id="avatar-preview" class="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-canvas bg-white transition-transform group-hover:scale-105 relative z-10">
+                    <button type="button" onclick="document.getElementById('avatar').click()" class="absolute bottom-1 right-1 w-9 h-9 bg-white rounded-full shadow-md border border-hairline flex items-center justify-center text-primary hover:bg-canvas-soft hover:scale-110 transition-all cursor-pointer z-20">
+                        <i data-lucide="camera" class="w-4.5 h-4.5"></i>
+                    </button>
+                </div>
+                
+                <div class="pb-2 text-center sm:text-left">
+                    <h2 class="text-2xl font-black text-ink tracking-tight">{{ $user->name }}</h2>
+                    <p class="text-sm font-medium text-mute mt-1">{{ $user->email }}</p>
+                    <div class="flex items-center justify-center sm:justify-start gap-2 mt-3">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-soft text-primary text-[10px] sm:text-xs font-bold border border-primary/20">
+                            <i data-lucide="shield-check" class="w-3 h-3"></i> Akun Terverifikasi
+                        </span>
+                        <span class="text-xs text-mute font-medium hidden sm:inline-block">Sejak {{ $user->created_at->format('M Y') }}</span>
+                    </div>
                 </div>
             </div>
         </div>

@@ -12,7 +12,7 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Kolom Utama: Detail Laporan -->
-    <div class="lg:col-span-2 space-y-6">
+    <div class="lg:col-span-2 flex flex-col space-y-6 h-full">
         <!-- Peringatan Duplikat -->
         @if(isset($duplicateReports) && $duplicateReports->count() > 0)
         <div class="bg-warning-soft border border-warning/30 rounded-[24px] p-5 shadow-sm animate-fade-in">
@@ -48,7 +48,7 @@
         @endif
 
         <!-- Informasi Utama -->
-        <div class="bg-canvas rounded-[24px] border border-hairline shadow-card-sm overflow-hidden">
+        <div class="bg-canvas rounded-[24px] border border-hairline shadow-card-sm overflow-hidden flex-1 flex flex-col">
             <div class="p-6 border-b border-hairline flex flex-wrap gap-4 items-center justify-between bg-canvas-soft">
                 <div>
                     <h2 class="text-xl font-bold text-ink">{{ $laporan->judul }}</h2>
@@ -77,7 +77,7 @@
                 </div>
             </div>
 
-            <div class="p-6 space-y-6">
+            <div class="p-6 space-y-6 flex-1 flex flex-col">
                 <!-- Deskripsi -->
                 <div>
                     <p class="text-[11px] font-bold text-mute uppercase tracking-widest mb-2">Deskripsi Laporan</p>
@@ -90,12 +90,12 @@
                     @if($laporan->gambarSebelum->count() > 0)
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             @foreach($laporan->gambarSebelum as $gambar)
-                                <a href="{{ asset('storage/' . $gambar->jalur_gambar) }}" target="_blank" class="block aspect-video rounded-xl overflow-hidden border border-hairline group relative">
-                                    <img src="{{ asset('storage/' . $gambar->jalur_gambar) }}" alt="Foto Bukti" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div onclick="openLightbox('{{ asset('storage/' . $gambar->jalur_gambar) }}')" class="block aspect-video rounded-xl overflow-hidden border border-hairline group relative cursor-pointer">
+                                    <img src="{{ asset('storage/' . $gambar->jalur_gambar) }}" alt="Foto Bukti" class="w-full h-full object-contain bg-black/5 group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-ink/0 group-hover:bg-ink/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                                         <i data-lucide="maximize-2" class="w-6 h-6 text-white drop-shadow-md"></i>
                                     </div>
-                                </a>
+                                </div>
                             @endforeach
                         </div>
                     @else
@@ -106,7 +106,7 @@
                 </div>
 
                 <!-- Lokasi -->
-                <div>
+                <div class="mt-auto pt-4">
                     <p class="text-[11px] font-bold text-mute uppercase tracking-widest mb-3">Lokasi Kejadian</p>
                     <div class="bg-canvas-soft rounded-xl border border-hairline p-4 flex gap-4">
                         <div class="w-10 h-10 rounded-full bg-primary-soft text-primary flex items-center justify-center shrink-0">
@@ -130,12 +130,12 @@
             <p class="text-[11px] font-bold text-mute uppercase tracking-widest mb-3 text-success">Hasil Penanganan (Sesudah)</p>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 @foreach($laporan->gambarSesudah as $gambar)
-                    <a href="{{ asset('storage/' . $gambar->jalur_gambar) }}" target="_blank" class="block aspect-video rounded-xl overflow-hidden border border-success/30 group relative">
-                        <img src="{{ asset('storage/' . $gambar->jalur_gambar) }}" alt="Foto Sesudah" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div onclick="openLightbox('{{ asset('storage/' . $gambar->jalur_gambar) }}')" class="block aspect-video rounded-xl overflow-hidden border border-success/30 group relative cursor-pointer">
+                        <img src="{{ asset('storage/' . $gambar->jalur_gambar) }}" alt="Foto Sesudah" class="w-full h-full object-contain bg-black/5 group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-success/0 group-hover:bg-success/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                             <i data-lucide="maximize-2" class="w-6 h-6 text-white drop-shadow-md"></i>
                         </div>
-                    </a>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -211,6 +211,21 @@
         </div>
 
         <!-- Riwayat Status -->
+        @if($laporan->ulasan)
+        <div class="bg-canvas rounded-[24px] border border-hairline shadow-card-sm p-5">
+            <p class="text-[11px] font-bold text-mute uppercase tracking-widest mb-4">Ulasan Pelapor</p>
+            <div class="flex items-center gap-1 mb-2">
+                @for($i = 1; $i <= 5; $i++)
+                    <i data-lucide="star" class="w-5 h-5 {{ $i <= $laporan->ulasan->rating ? 'text-warning fill-warning' : 'text-hairline' }}"></i>
+                @endfor
+                <span class="text-sm font-bold text-ink ml-2">{{ $laporan->ulasan->rating }}/5</span>
+            </div>
+            @if($laporan->ulasan->komentar)
+                <p class="text-sm text-body bg-canvas-soft p-3 rounded-xl border border-hairline mt-2">{{ $laporan->ulasan->komentar }}</p>
+            @endif
+        </div>
+        @endif
+
         <div class="bg-canvas rounded-[24px] border border-hairline shadow-card-sm p-5">
             <p class="text-[11px] font-bold text-mute uppercase tracking-widest mb-4">Riwayat Status</p>
             <div class="space-y-4">

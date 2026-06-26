@@ -44,7 +44,7 @@
             {{-- Thumbnail Area (Left) --}}
             <div class="relative w-32 sm:w-40 shrink-0 bg-canvas-soft overflow-hidden">
                 @if($tugas->gambarSebelum && $tugas->gambarSebelum->count() > 0)
-                    <img src="{{ Storage::url($tugas->gambarSebelum->first()->jalur_gambar) }}" alt="Foto Sampah" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                    <img src="{{ Storage::url($tugas->gambarSebelum->first()->jalur_gambar) }}" alt="Foto Sampah" class="w-full h-full object-contain bg-black/5 group-hover:scale-110 transition-transform duration-700 ease-in-out">
                 @else
                     <div class="w-full h-full flex flex-col items-center justify-center text-mute bg-canvas-soft-2">
                         <i data-lucide="image" class="w-8 h-8 opacity-30 mb-1"></i>
@@ -80,7 +80,7 @@
                             <i data-lucide="tag" class="w-3.5 h-3.5 text-mute shrink-0"></i>
                             <span class="truncate font-medium">{{ $tugas->kategori->nama ?? '-' }}</span>
                         </div>
-                        <span class="text-[10px] font-bold text-mute shrink-0"><i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>{{ $tugas->ditugaskan_pada->diffForHumans() }}</span>
+                        <span class="text-[10px] font-bold text-mute shrink-0"><i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>{{ $tugas->updated_at->diffForHumans() }}</span>
                     </div>
                 </div>
             </div>

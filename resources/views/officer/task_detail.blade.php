@@ -81,7 +81,7 @@
                         <p class="text-xs font-bold text-mute uppercase tracking-wider mb-2">Sebelum (Dari Pelapor)</p>
                         @if($tugas->gambarSebelum->count() > 0)
                             <div class="aspect-[4/3] rounded-xl overflow-hidden bg-canvas-soft border border-hairline shadow-inner">
-                                <img src="{{ asset('storage/' . $tugas->gambarSebelum->first()->jalur_gambar) }}" alt="Sebelum" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="window.open(this.src, '_blank')">
+                                <img src="{{ asset('storage/' . $tugas->gambarSebelum->first()->jalur_gambar) }}" alt="Sebelum" class="w-full h-full object-contain bg-black/5 hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="openLightbox(this.src)">
                             </div>
                         @else
                             <div class="aspect-[4/3] rounded-xl bg-canvas-soft border border-hairline border-dashed flex flex-col items-center justify-center text-mute">
@@ -96,7 +96,7 @@
                         <p class="text-xs font-bold text-mute uppercase tracking-wider mb-2">Sesudah (Hasil Eksekusi)</p>
                         @if($tugas->gambarSesudah->count() > 0)
                             <div class="aspect-[4/3] rounded-xl overflow-hidden bg-canvas-soft border border-hairline shadow-inner">
-                                <img src="{{ asset('storage/' . $tugas->gambarSesudah->first()->jalur_gambar) }}" alt="Sesudah" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="window.open(this.src, '_blank')">
+                                <img src="{{ asset('storage/' . $tugas->gambarSesudah->first()->jalur_gambar) }}" alt="Sesudah" class="w-full h-full object-contain bg-black/5 hover:scale-105 transition-transform duration-500 cursor-pointer" onclick="openLightbox(this.src)">
                             </div>
                         @else
                             <div class="aspect-[4/3] rounded-xl bg-canvas-soft border border-hairline border-dashed flex flex-col items-center justify-center text-mute">
@@ -227,6 +227,21 @@
                     </div>
                 </form>
             </div>
+
+            @if($tugas->ulasan)
+            <div class="bg-canvas border border-hairline rounded-[24px] shadow-card-md p-6">
+                <h4 class="text-lg font-black text-ink mb-4">Ulasan Pelapor</h4>
+                <div class="flex items-center gap-1 mb-2">
+                    @for($i = 1; $i <= 5; $i++)
+                        <i data-lucide="star" class="w-5 h-5 {{ $i <= $tugas->ulasan->rating ? 'text-warning fill-warning' : 'text-hairline' }}"></i>
+                    @endfor
+                    <span class="text-sm font-bold text-ink ml-2">{{ $tugas->ulasan->rating }}/5</span>
+                </div>
+                @if($tugas->ulasan->komentar)
+                    <p class="text-sm text-body bg-canvas-soft p-3 rounded-xl border border-hairline mt-2">{{ $tugas->ulasan->komentar }}</p>
+                @endif
+            </div>
+            @endif
         </div>
     </div>
 </div>

@@ -72,9 +72,9 @@
             {{-- User Profile --}}
             <div class="px-3 py-4 border-t border-hairline">
                 <div class="flex items-center gap-3 px-3 py-2">
-                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->nama }}" class="w-8 h-8 rounded-full object-cover">
+                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name ?? 'Petugas' }}" class="w-8 h-8 rounded-full object-cover">
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-ink truncate">{{ auth()->user()->nama }}</p>
+                        <p class="text-sm font-medium text-ink truncate">{{ auth()->user()->name ?? 'Petugas' }}</p>
                         <p class="text-xs text-mute truncate">Petugas Lapangan</p>
                     </div>
                     <a href="{{ route('logout') }}" class="p-1.5 rounded-md hover:bg-error-soft text-mute hover:text-error transition-colors" title="Keluar" id="sidebar-logout">
@@ -150,7 +150,7 @@
 
                     <div class="hidden sm:flex items-center gap-2.5 pl-3 border-l border-hairline">
                         <img src="{{ auth()->user()->avatar_url }}" alt="" class="w-8 h-8 rounded-full object-cover">
-                        <span class="text-sm font-medium text-ink">{{ auth()->user()->nama }}</span>
+                        <span class="text-sm font-medium text-ink">{{ auth()->user()->name ?? 'Petugas' }}</span>
                     </div>
                 </div>
             </header>
@@ -231,6 +231,39 @@
                 }
             }
         });
+    </script>
+
+    {{-- Global Image Lightbox --}}
+    <div id="image-lightbox" class="fixed inset-0 bg-black/90 hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm" style="z-index: 99999;" onclick="closeLightbox()">
+        <button type="button" class="absolute top-6 right-6 w-12 h-12 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/80 transition-colors z-10" onclick="closeLightbox()">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="Enlarged View" class="object-contain rounded-xl shadow-2xl scale-95 transition-transform duration-300" style="max-width: 90vw; max-height: 90vh;" onclick="event.stopPropagation()">
+    </div>
+    <script>
+        function openLightbox(imgSrc) {
+            const lightbox = document.getElementById('image-lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = imgSrc;
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            void lightbox.offsetWidth; // Trigger reflow
+            lightbox.classList.remove('opacity-0');
+            img.classList.remove('scale-95');
+            img.classList.add('scale-100');
+        }
+        function closeLightbox() {
+            const lightbox = document.getElementById('image-lightbox');
+            const img = document.getElementById('lightbox-img');
+            lightbox.classList.add('opacity-0');
+            img.classList.remove('scale-100');
+            img.classList.add('scale-95');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                img.src = '';
+            }, 300);
+        }
     </script>
 
     @stack('scripts')

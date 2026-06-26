@@ -13,7 +13,7 @@
         
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-                <h1 class="text-3xl font-black text-white tracking-tight mb-2">Selamat Datang, {{ auth()->user()->nama ?? 'Admin' }}!</h1>
+                <h1 class="text-3xl font-black text-white tracking-tight mb-2">Selamat Datang, {{ auth()->user()->name ?? 'Admin' }}!</h1>
                 <p class="text-white/80 font-medium max-w-xl text-sm leading-relaxed">Pantau metrik utama TrashReport, kelola laporan masuk, dan koordinasikan petugas lapangan untuk menjaga kebersihan kota.</p>
             </div>
             <div class="shrink-0 hidden md:block">
@@ -96,7 +96,7 @@
                             <i data-lucide="map-pin" class="w-4 h-4 text-error shrink-0"></i>
                             <p class="text-sm font-bold text-ink truncate">{{ $alarm->center_report->alamat }}</p>
                         </div>
-                        <p class="text-[11px] text-mute mb-3">{{ $alarm->center_report->wilayah->nama ?? 'Tidak diketahui' }}</p>
+                        <p class="text-[11px] text-mute mb-3">{{ $alarm->center_report->wilayah?->nama ?? 'Tidak diketahui' }}</p>
                         
                         <div class="flex items-center justify-between bg-canvas-soft rounded-lg p-2.5 border border-hairline">
                             <span class="text-xs font-semibold text-body">Tingkat Kerawanan:</span>
@@ -141,8 +141,8 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2.5">
-                            <img src="{{ $laporan->user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user->name }}" class="w-7 h-7 rounded-full object-cover">
-                            <span class="text-sm font-medium text-body">{{ $laporan->user->name }}</span>
+                            <img src="{{ $laporan->user?->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($laporan->user?->name ?? 'User').'&background=000&color=fff' }}" alt="{{ $laporan->user?->name ?? 'User' }}" class="w-7 h-7 rounded-full object-cover">
+                            <span class="text-sm font-medium text-body">{{ $laporan->user?->name ?? 'User' }}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4">
@@ -150,7 +150,7 @@
                             <i data-lucide="map-pin" class="w-4 h-4 text-mute shrink-0 mt-0.5"></i>
                             <div>
                                 <p class="text-sm font-medium text-body line-clamp-1">{{ $laporan->alamat }}</p>
-                                <p class="text-[11px] text-mute">{{ $laporan->wilayah->nama ?? 'Tidak diketahui' }}</p>
+                                <p class="text-[11px] text-mute">{{ $laporan->wilayah?->nama ?? 'Tidak diketahui' }}</p>
                             </div>
                         </div>
                     </td>

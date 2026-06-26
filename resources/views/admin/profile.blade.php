@@ -11,15 +11,13 @@
         </div>
         
         <div class="px-8 pb-8">
-            <div class="relative flex justify-between items-end -mt-12 mb-6">
-                <div class="flex items-end gap-5">
-                    <div class="w-24 h-24 rounded-full border-4 border-canvas bg-white overflow-hidden shadow-md relative z-10">
-                        <img src="{{ $user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=000&color=fff' }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="mb-1">
-                        <h2 class="text-2xl font-black text-ink tracking-tight leading-none">{{ $user->name }}</h2>
-                        <p class="text-sm font-medium text-mute mt-1">Administrator Sistem</p>
-                    </div>
+            <div class="relative -mt-12 mb-6 text-center sm:text-left">
+                <div class="w-24 h-24 mx-auto sm:mx-0 rounded-full border-4 border-canvas bg-white overflow-hidden shadow-md relative z-10 mb-4">
+                    <img src="{{ $user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=000&color=fff' }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h2 class="text-2xl font-black text-ink tracking-tight leading-none">{{ $user->name }}</h2>
+                    <p class="text-sm font-medium text-mute mt-1.5">Administrator Sistem</p>
                 </div>
             </div>
 

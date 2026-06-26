@@ -115,7 +115,7 @@
             <div>
                 <p class="text-xs font-medium text-mute mb-2 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span>Sebelum</p>
                 @if($report->beforeImages->count() > 0)
-                    <img src="{{ asset('storage/' . $report->beforeImages->first()->image_path) }}" class="w-full h-48 object-cover rounded-lg shadow-card-sm" alt="Before">
+                    <img src="{{ asset('storage/' . $report->beforeImages->first()->image_path) }}" class="w-full h-48 object-contain bg-black/5 rounded-lg shadow-card-sm cursor-pointer hover:opacity-90 transition-opacity" alt="Before" onclick="openLightbox(this.src)">
                 @else
                     <div class="w-full h-48 bg-canvas-soft-2 rounded-lg flex items-center justify-center"><p class="text-sm text-mute">Foto tersedia</p></div>
                 @endif
@@ -123,7 +123,7 @@
             <div>
                 <p class="text-xs font-medium text-mute mb-2 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success"></span>Sesudah</p>
                 @if($report->afterImages->count() > 0)
-                    <img src="{{ asset('storage/' . $report->afterImages->first()->image_path) }}" class="w-full h-48 object-cover rounded-lg shadow-card-sm" alt="After">
+                    <img src="{{ asset('storage/' . $report->afterImages->first()->image_path) }}" class="w-full h-48 object-contain bg-black/5 rounded-lg shadow-card-sm cursor-pointer hover:opacity-90 transition-opacity" alt="After" onclick="openLightbox(this.src)">
                 @else
                     <div class="w-full h-48 bg-canvas-soft-2 rounded-lg flex items-center justify-center"><p class="text-sm text-mute">Belum tersedia</p></div>
                 @endif

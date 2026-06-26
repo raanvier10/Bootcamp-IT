@@ -46,7 +46,7 @@
         {{-- Thumbnail Area (Left) --}}
         <div class="relative w-32 sm:w-40 shrink-0 bg-canvas-soft overflow-hidden">
             @if($report->before_images && $report->before_images->count() > 0)
-                <img src="{{ Storage::url($report->before_images->first()->jalur_gambar) }}" alt="Foto Sampah" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                <img src="{{ Storage::url($report->before_images->first()->jalur_gambar) }}" alt="Foto Sampah" class="w-full h-full object-contain bg-black/5 group-hover:scale-110 transition-transform duration-700 ease-in-out">
             @else
                 <div class="w-full h-full flex flex-col items-center justify-center text-mute bg-canvas-soft-2">
                     <i data-lucide="image" class="w-8 h-8 opacity-30 mb-1"></i>

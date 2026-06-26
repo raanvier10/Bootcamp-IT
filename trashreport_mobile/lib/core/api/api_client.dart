@@ -11,7 +11,7 @@ class ApiClient {
 
   ApiClient._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: 'http://127.0.0.1:8000/api', // Edge localhost
+      baseUrl: 'https://trashreport.web.id/api', // Production URL
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
       headers: {

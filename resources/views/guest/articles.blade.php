@@ -31,7 +31,7 @@
                             <span class="text-xs text-mute">{{ $article->diterbitkan_pada->format('d M Y') }}</span>
                             @if($article->penulis)
                                 <span class="text-xs text-mute">•</span>
-                                <span class="text-xs text-mute">{{ $article->penulis->nama }}</span>
+                                <span class="text-xs text-mute">{{ $article->penulis->name }}</span>
                             @endif
                         </div>
                         <h3 class="text-base font-semibold text-ink tracking-tight mb-2 group-hover:text-primary transition-colors line-clamp-2" style="letter-spacing: -0.5px">{{ $article->judul }}</h3>

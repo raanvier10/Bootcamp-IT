@@ -13,7 +13,7 @@
         
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-                <h1 class="text-3xl font-black text-white tracking-tight mb-2">Siap Bertugas, {{ auth()->user()->nama }}?</h1>
+                <h1 class="text-3xl font-black text-white tracking-tight mb-2">Siap Bertugas, {{ auth()->user()->name ?? 'Petugas' }}?</h1>
                 <p class="text-white/80 font-medium max-w-xl text-sm leading-relaxed">Pantau penugasan baru dan kelola jadwal pembersihanmu hari ini. Setiap tumpukan sampah yang dibersihkan membawa senyum bagi masyarakat.</p>
             </div>
             <div class="shrink-0 hidden md:block">
@@ -119,7 +119,7 @@
                                             {{ $tugas->kode_laporan }}
                                         </span>
                                         <span class="w-1 h-1 bg-mute rounded-full"></span>
-                                        <span><i data-lucide="calendar" class="w-3 h-3 inline mr-1"></i>{{ $tugas->ditugaskan_pada->format('d M Y, H:i') }}</span>
+                                        <span><i data-lucide="calendar" class="w-3 h-3 inline mr-1"></i>{{ $tugas->updated_at->format('d M Y, H:i') }}</span>
                                         <span class="w-1 h-1 bg-mute rounded-full"></span>
                                         <span>{{ $tugas->wilayah->nama ?? 'Wilayah Tidak Diketahui' }}</span>
                                     </div>

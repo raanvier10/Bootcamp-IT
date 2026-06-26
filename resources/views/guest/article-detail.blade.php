@@ -27,7 +27,7 @@
                 @if($article->author)
                     <div class="flex items-center gap-2">
                         <i data-lucide="user" class="w-4 h-4"></i>
-                        {{ $article->penulis->nama }}
+                        {{ $article->penulis->name }}
                     </div>
                 @endif
             </div>

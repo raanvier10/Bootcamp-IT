@@ -33,12 +33,12 @@ class TrashReportSeeder extends Seeder
 
         // 3. Admin
         DB::table('users')->insert([
-            'id'                     => 1,
+            'id'                     => 2,
             'peran'                  => 'Admin',
             'name'                   => 'Admin TrashReport',
-            'email'                  => 'admin@trashreport.id',
+            'email'                  => 'admin@trashreport.web.id',
             'telepon'                => '081234567890',
-            'password'               => Hash::make('password'),
+            'password'               => Hash::make('AdminTrashReport123!'),
             'email_verified_at'      => now(),
             'created_at'             => now(),
             'updated_at'             => now(),
@@ -46,12 +46,12 @@ class TrashReportSeeder extends Seeder
 
         // 4. Demo Pengguna
         DB::table('users')->insert([
-            'id'                     => 2,
+            'id'                     => 1,
             'peran'                  => 'Pelapor',
-            'name'                   => 'Budi Santoso',
-            'email'                  => 'budi@email.com',
+            'name'                   => 'Pelapor',
+            'email'                  => 'am3935699@gmail.com',
             'telepon'                => '081298765432',
-            'password'               => Hash::make('password'),
+            'password'               => Hash::make('Dam10102006!'),
             'email_verified_at'      => now(),
             'created_at'             => now(),
             'updated_at'             => now(),
@@ -63,11 +63,11 @@ class TrashReportSeeder extends Seeder
             'peran'                  => 'Petugas',
             'wilayah_id'             => 1,
             'name'                   => 'Petugas Karawang Barat',
-            'email'                  => 'petugas.krwbrt@trashreport.id',
+            'email'                  => 'petugas.krwbrt@trashreport.web.id',
             'telepon'                => '081311223344',
             'kode_pegawai'           => 'PTG-DEMO',
             'aktif'                  => true,
-            'password'               => Hash::make('password'),
+            'password'               => Hash::make('PetugasKrwBrt123!'),
             'email_verified_at'      => now(),
             'created_at'             => now(),
             'updated_at'             => now(),
@@ -76,7 +76,7 @@ class TrashReportSeeder extends Seeder
         // 6. Artikel edukasi
         DB::table('artikel')->insert([
             [
-                'penulis_id'        => 1,
+                'penulis_id'        => 2,
                 'judul'             => 'Cara Mudah Memilah Sampah di Rumah',
                 'slug'              => 'cara-mudah-memilah-sampah-di-rumah',
                 'isi'               => '<p>Memilah sampah di rumah adalah langkah kecil yang memberikan dampak besar bagi lingkungan.</p><h2>1. Siapkan Tempat Sampah Terpisah</h2><p>Sediakan minimal 3 tempat sampah berbeda untuk sampah organik (sisa makanan, daun), anorganik (plastik, logam, kaca), dan sampah B3 (baterai, lampu neon).</p><h2>2. Kenali Jenis Sampah</h2><p>Sampah organik mudah terurai secara alami, sementara sampah anorganik membutuhkan proses daur ulang khusus.</p>',
@@ -86,7 +86,7 @@ class TrashReportSeeder extends Seeder
                 'updated_at'        => now()->subDays(10),
             ],
             [
-                'penulis_id'        => 1,
+                'penulis_id'        => 2,
                 'judul'             => 'Bahaya Sampah Liar bagi Kesehatan Masyarakat',
                 'slug'              => 'bahaya-sampah-liar-bagi-kesehatan-masyarakat',
                 'isi'               => '<p>Sampah liar yang dibiarkan menumpuk tanpa penanganan serius dapat menimbulkan berbagai masalah kesehatan serius.</p><h2>Penyakit yang Ditimbulkan</h2><p>Tumpukan sampah menjadi tempat berkembang biak nyamuk, tikus, dan lalat yang membawa penyakit seperti demam berdarah, leptospirosis, dan diare.</p><h2>Apa yang Bisa Kita Lakukan?</h2><p>Laporkan titik-titik sampah liar melalui TrashReport.</p>',
@@ -102,7 +102,7 @@ class TrashReportSeeder extends Seeder
         DB::table('laporan')->insert([
             'id'               => 1,
             'kode_laporan'     => $kodeLaporan,
-            'user_id'          => 2,
+            'user_id'          => 1,
             'petugas_id'       => 3,
             'wilayah_id'       => 1,
             'kategori_id'      => 1,
@@ -125,14 +125,14 @@ class TrashReportSeeder extends Seeder
                 'laporan_id'  => 1,
                 'status'      => 'Menunggu',
                 'catatan'     => 'Laporan baru dibuat',
-                'diubah_oleh' => 2, // Pelapor
+                'diubah_oleh' => 1, // Pelapor
                 'dibuat_pada' => now()->subDays(1),
             ],
             [
                 'laporan_id'  => 1,
                 'status'      => 'Ditugaskan',
                 'catatan'     => 'Ditugaskan ke Petugas Karawang Barat',
-                'diubah_oleh' => 1, // Admin
+                'diubah_oleh' => 2, // Admin
                 'dibuat_pada' => now(),
             ]
         ]);

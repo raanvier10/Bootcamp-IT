@@ -32,7 +32,7 @@ class TaskController extends Controller
 
     public function show($id)
     {
-        $laporan = \App\Models\Laporan::with([
+        $tugas = \App\Models\Laporan::with([
             'wilayah', 
             'kategori', 
             'gambarSebelum',
@@ -42,7 +42,7 @@ class TaskController extends Controller
         ->where('petugas_id', Auth::id())
         ->findOrFail($id);
 
-        return view('officer.task_detail', compact('laporan'));
+        return view('officer.task_detail', compact('tugas'));
     }
 
     public function update(Request $request, $id)
@@ -59,6 +59,14 @@ class TaskController extends Controller
                 'catatan'     => 'Petugas sedang menuju lokasi.',
                 'diubah_oleh' => Auth::id(),
             ]);
+            \App\Models\Notifikasi::create([
+                'user_id' => $laporan->user_id,
+                'judul' => "Petugas Menuju Lokasi",
+                'pesan' => "Petugas sedang dalam perjalanan ke lokasi laporan Anda ({$laporan->kode_laporan}).",
+                'tipe' => 'info',
+                'sudah_dibaca' => false,
+                'dibuat_pada' => now()
+            ]);
             return back()->with('success', 'Status diperbarui: Anda sedang dalam perjalanan menuju lokasi.');
         } 
         
@@ -69,6 +77,14 @@ class TaskController extends Controller
                 'status'      => 'Sedang Dibersihkan',
                 'catatan'     => 'Petugas telah tiba di lokasi dan mulai membersihkan sampah.',
                 'diubah_oleh' => Auth::id(),
+            ]);
+            \App\Models\Notifikasi::create([
+                'user_id' => $laporan->user_id,
+                'judul' => "Pembersihan Dimulai",
+                'pesan' => "Petugas telah tiba di lokasi dan mulai membersihkan sampah untuk laporan Anda ({$laporan->kode_laporan}).",
+                'tipe' => 'info',
+                'sudah_dibaca' => false,
+                'dibuat_pada' => now()
             ]);
             return back()->with('success', 'Status diperbarui: Mulai proses pembersihan.');
         } 
@@ -99,6 +115,15 @@ class TaskController extends Controller
                 'status'      => 'Selesai',
                 'catatan'     => $request->catatan_penanganan,
                 'diubah_oleh' => Auth::id(),
+            ]);
+
+            \App\Models\Notifikasi::create([
+                'user_id' => $laporan->user_id,
+                'judul' => "Laporan Selesai",
+                'pesan' => "Laporan Anda ({$laporan->kode_laporan}) telah selesai ditangani. Terima kasih atas partisipasinya!",
+                'tipe' => 'success',
+                'sudah_dibaca' => false,
+                'dibuat_pada' => now()
             ]);
 
             return back()->with('success', 'Tugas berhasil diselesaikan! Terima kasih atas kerja keras Anda.');

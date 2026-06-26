@@ -65,7 +65,7 @@ class GuestController extends Controller
     {
         $article = Artikel::diterbitkan()
             ->where('slug', $slug)
-            ->with('penulis:id,nama')
+            ->with('penulis:id,name')
             ->firstOrFail();
 
         $relatedArticles = Artikel::diterbitkan()
