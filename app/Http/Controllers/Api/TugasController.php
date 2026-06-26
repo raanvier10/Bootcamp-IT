@@ -21,7 +21,7 @@ class TugasController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $tugas = Laporan::with(['kategori', 'wilayah', 'user'])
+        $tugas = Laporan::with(['kategori', 'wilayah', 'user', 'gambar', 'ulasan'])
             ->where('petugas_id', $user->id)
             ->orderBy('updated_at', 'desc')
             ->get();
