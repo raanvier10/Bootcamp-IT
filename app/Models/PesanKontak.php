@@ -18,6 +18,7 @@ class PesanKontak extends Model
         'email',
         'subjek',
         'pesan',
+        'dibuat_pada',
     ];
 
     protected $casts = [

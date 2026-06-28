@@ -19,6 +19,7 @@ class GambarLaporan extends Model
         'jalur_gambar',
         'lintang',
         'bujur',
+        'dibuat_pada',
     ];
 
     protected $casts = [

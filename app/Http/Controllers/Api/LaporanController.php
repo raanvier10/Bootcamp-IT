@@ -152,23 +152,43 @@ class LaporanController extends Controller
             ]
         );
 
-        // Jika laporan belum Ditutup, maka otomatis tutup setelah diberi rating
-        if ($laporan->status !== 'Ditutup') {
-            $laporan->update(['status' => 'Ditutup']);
-            
-            \App\Models\RiwayatStatus::create([
-                'laporan_id' => $laporan->id,
-                'status' => 'Ditutup',
-                'catatan' => 'Laporan selesai dan telah diberikan penilaian oleh pelapor via Aplikasi Mobile.',
-                'diubah_oleh' => $user->id,
-                'dibuat_pada' => now()
-            ]);
-        }
-
         return response()->json([
             'success' => true,
             'message' => 'Terima kasih atas penilaian Anda!',
             'data' => $ulasan
+        ]);
+    }
+
+    /**
+     * Konfirmasi laporan oleh pelapor (dari Menunggu Konfirmasi menjadi Selesai)
+     */
+    public function konfirmasi(Request $request, $id)
+    {
+        $user = Auth::user();
+        $laporan = Laporan::where('id', $id)->where('user_id', $user->id)->first();
+
+        if (!$laporan) {
+            return response()->json(['success' => false, 'message' => 'Laporan tidak ditemukan.'], 404);
+        }
+
+        if (strtolower($laporan->status) !== 'menunggu konfirmasi') {
+            return response()->json(['success' => false, 'message' => 'Laporan tidak dalam status Menunggu Konfirmasi.'], 400);
+        }
+
+        $laporan->update(['status' => 'Selesai']);
+
+        \App\Models\RiwayatStatusLaporan::create([
+            'laporan_id' => $laporan->id,
+            'status' => 'Selesai',
+            'catatan' => 'Pelapor telah mengonfirmasi bahwa pembersihan telah selesai.',
+            'diubah_oleh' => $user->id,
+            'dibuat_pada' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Laporan berhasil dikonfirmasi selesai.',
+            'data' => $laporan
         ]);
     }
 }

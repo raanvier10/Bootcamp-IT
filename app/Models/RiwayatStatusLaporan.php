@@ -18,6 +18,7 @@ class RiwayatStatusLaporan extends Model
         'status',
         'catatan',
         'diubah_oleh',
+        'dibuat_pada',
     ];
 
     protected $casts = [

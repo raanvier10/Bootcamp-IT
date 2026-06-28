@@ -18,6 +18,7 @@ class Ulasan extends Model
         'user_id',
         'nilai',
         'komentar',
+        'dibuat_pada',
     ];
 
     protected $casts = [
