@@ -132,7 +132,7 @@
     </div>
 
     {{-- Confirm & Feedback --}}
-    @if($report->status === 'Menunggu Konfirmasi')
+    @if(in_array($report->status, ['Selesai', 'Menunggu Konfirmasi']))
     <div class="bg-primary-soft rounded-xl border border-primary/20 p-6 mb-6">
         <h3 class="text-base font-semibold text-primary mb-2">Konfirmasi Penyelesaian</h3>
         <p class="text-sm text-body mb-4">Petugas telah menyelesaikan pembersihan. Apakah lokasi sudah benar-benar bersih?</p>
@@ -143,7 +143,7 @@
     </div>
     @endif
 
-    @if(in_array($report->status, ['Ditutup', 'Selesai']) && !$report->ulasan)
+    @if($report->status === 'Ditutup' && !$report->ulasan)
     <div class="bg-canvas rounded-xl shadow-card-lg border border-hairline p-6 mb-6">
         <h3 class="text-base font-semibold text-ink mb-4">Beri Rating & Feedback</h3>
         <form method="POST" action="{{ route('user.report.feedback', $report->id) }}" class="space-y-4" id="feedback-form">

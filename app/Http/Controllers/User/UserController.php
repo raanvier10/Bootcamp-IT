@@ -149,7 +149,7 @@ class UserController extends Controller
     public function confirmReport(Request $request, $id)
     {
         $report = Laporan::where('user_id', Auth::id())
-            ->where('status', 'Menunggu Konfirmasi')
+            ->whereIn('status', ['Selesai', 'Menunggu Konfirmasi'])
             ->findOrFail($id);
 
         $report->update(['status' => 'Ditutup']);
@@ -183,6 +183,16 @@ class UserController extends Controller
             'nilai'       => $request->rating,
             'komentar'    => $request->comment,
         ]);
+
+        if ($laporan->status !== 'Ditutup') {
+            $laporan->update(['status' => 'Ditutup']);
+            \App\Models\RiwayatStatusLaporan::create([
+                'laporan_id'  => $laporan->id,
+                'status'      => 'Ditutup',
+                'catatan'     => 'Laporan ditutup otomatis setelah memberikan ulasan.',
+                'diubah_oleh' => Auth::id(),
+            ]);
+        }
 
         return redirect()->route('user.report.detail', $laporan->id)
             ->with('success', 'Terima kasih atas ulasan Anda!');
