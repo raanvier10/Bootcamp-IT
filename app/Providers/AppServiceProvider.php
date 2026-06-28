@@ -21,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Paksa timezone untuk mengabaikan cache server yang membandel
+        config(['app.timezone' => 'Asia/Jakarta']);
+        date_default_timezone_set('Asia/Jakarta');
+        \Carbon\Carbon::setLocale('id');
+
         if (config('app.env') !== 'local') {
             URL::forceScheme('https');
         }
