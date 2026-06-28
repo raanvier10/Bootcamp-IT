@@ -134,6 +134,11 @@ class AdminController extends Controller
             'telepon' => 'nullable|string|max:20',
             'wilayah_id' => 'nullable|exists:wilayah,id',
             'aktif' => 'required|boolean',
+        ], [
+            'email.unique' => 'Alamat email ini sudah digunakan oleh pengguna/petugas lain.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
         $officer = \App\Models\User::create([
