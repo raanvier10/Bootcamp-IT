@@ -38,7 +38,6 @@ class TugasController extends Controller
      */
     public function verifikasi(Request $request, $id)
     {
-        file_put_contents(public_path('hit.txt'), "Hit verifikasi for ID: $id with status: " . $request->input('status'));
         try {
             $user = Auth::user();
             
@@ -119,7 +118,6 @@ class TugasController extends Controller
             ], 200);
             
         } catch (\Exception $e) {
-            file_put_contents(public_path('caveman.txt'), $e->getMessage() . "\n" . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
