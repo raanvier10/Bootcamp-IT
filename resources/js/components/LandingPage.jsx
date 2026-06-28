@@ -91,7 +91,7 @@ const LandingPage = ({ stats, mapReports, latestArticles, authRoute, mapRoute, a
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
                 <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary-soft/50 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none"></div>
 
-                <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-20 lg:pt-20 lg:pb-32 flex flex-col lg:flex-row items-center gap-16">
+                <div className="relative max-w-7xl mx-auto px-6 pt-8 pb-16 lg:pt-10 lg:pb-24 flex flex-col lg:flex-row items-center gap-16">
                     <motion.div initial="hidden" animate="visible" variants={stagger} className="flex-1 text-left">
                         <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-white border border-gray-200 text-primary text-sm font-bold px-4 py-2 rounded-full mb-8 shadow-sm">
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
