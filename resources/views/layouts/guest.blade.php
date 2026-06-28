@@ -156,7 +156,7 @@
                             <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 text-primary">
                                 <i data-lucide="map-pin" class="w-4 h-4"></i>
                             </div>
-                            <span class="mt-1.5">Jl. Tuparev No.1, Karawang</span>
+                            <span class="mt-1.5">Jl. Banten No. 1 41315 Karawang Barat Jawa Barat</span>
                         </li>
                     </ul>
                 </div>

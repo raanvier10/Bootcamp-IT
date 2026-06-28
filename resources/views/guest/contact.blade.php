@@ -12,7 +12,7 @@
                 <div class="space-y-5">
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 bg-primary-soft rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="map-pin" class="w-5 h-5 text-primary"></i></div>
-                        <div><p class="text-sm font-medium text-ink mb-1">Alamat</p><p class="text-sm text-body">Jl. Tuparev No. 1, Karawang Barat, Jawa Barat 41311</p></div>
+                        <div><p class="text-sm font-medium text-ink mb-1">Alamat</p><p class="text-sm text-body">Jl. Banten No. 1 41315 Karawang Barat Jawa Barat</p></div>
                     </div>
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 bg-primary-soft rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="mail" class="w-5 h-5 text-primary"></i></div>
