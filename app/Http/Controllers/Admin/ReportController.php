@@ -15,8 +15,14 @@ class ReportController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('kategori_id') && $request->kategori_id !== 'Semua Kategori') {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
         $laporans = $query->latest('dilaporkan_pada')->paginate(15);
-        return view('admin.reports', compact('laporans'));
+        $categories = \App\Models\Kategori::all();
+
+        return view('admin.reports', compact('laporans', 'categories'));
     }
 
     public function exportPdf(Request $request)
@@ -25,6 +31,10 @@ class ReportController extends Controller
         
         if ($request->filled('status') && $request->status !== 'Semua Status') {
             $query->where('status', $request->status);
+        }
+        
+        if ($request->filled('kategori_id') && $request->kategori_id !== 'Semua Kategori') {
+            $query->where('kategori_id', $request->kategori_id);
         }
         
         if ($request->filled('start_date') && $request->filled('end_date')) {

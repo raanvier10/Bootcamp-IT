@@ -11,6 +11,12 @@
             <p class="text-[11px] text-mute mt-1">Kelola dan verifikasi laporan sampah dari masyarakat.</p>
         </div>
         <form method="GET" action="{{ route('admin.reports') }}" class="flex gap-2 w-full sm:w-auto" id="filter-form">
+            <select name="kategori_id" class="form-select text-sm w-full sm:w-48 bg-white border-hairline rounded-xl py-2 px-3 focus:ring-primary focus:border-primary shadow-sm" onchange="document.getElementById('filter-form').submit()">
+                <option value="Semua Kategori" {{ request('kategori_id') == 'Semua Kategori' ? 'selected' : '' }}>Semua Kategori</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}" {{ request('kategori_id') == $cat->id ? 'selected' : '' }}>{{ $cat->nama }}</option>
+                @endforeach
+            </select>
             <select name="status" class="form-select text-sm w-full sm:w-48 bg-white border-hairline rounded-xl py-2 px-3 focus:ring-primary focus:border-primary shadow-sm" onchange="document.getElementById('filter-form').submit()">
                 <option value="Semua Status" {{ request('status') == 'Semua Status' ? 'selected' : '' }}>Semua Status</option>
                 <option value="Menunggu" {{ request('status') == 'Menunggu' ? 'selected' : '' }}>Menunggu Verifikasi</option>
