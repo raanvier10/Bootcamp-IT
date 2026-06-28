@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="@yield('meta_description', 'TrashReport — Sistem pelaporan sampah liar berbasis komunitas. Laporkan titik sampah, jaga kebersihan lingkungan kita bersama.')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2">
     <title>@yield('title', 'TrashReport') — Laporkan Sampah, Jaga Bumi</title>
 
     <!-- Google Fonts: Outfit -->
