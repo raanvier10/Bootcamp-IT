@@ -16,11 +16,11 @@
                     </div>
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 bg-primary-soft rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="mail" class="w-5 h-5 text-primary"></i></div>
-                        <div><p class="text-sm font-medium text-ink mb-1">Email</p><p class="text-sm text-body">info@trashreport.id</p></div>
+                        <div><p class="text-sm font-medium text-ink mb-1">Email</p><p class="text-sm text-body">contact@trashreport.web.id</p></div>
                     </div>
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 bg-primary-soft rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="phone" class="w-5 h-5 text-primary"></i></div>
-                        <div><p class="text-sm font-medium text-ink mb-1">Telepon</p><p class="text-sm text-body">(0267) 123-4567</p></div>
+                        <div><p class="text-sm font-medium text-ink mb-1">Telepon</p><p class="text-sm text-body">085559443285</p></div>
                     </div>
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 bg-primary-soft rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="clock" class="w-5 h-5 text-primary"></i></div>

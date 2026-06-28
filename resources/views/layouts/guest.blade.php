@@ -144,13 +144,13 @@
                             <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 text-primary">
                                 <i data-lucide="mail" class="w-4 h-4"></i>
                             </div>
-                            <span class="mt-1.5">info@trashreport.id</span>
+                            <span class="mt-1.5">contact@trashreport.web.id</span>
                         </li>
                         <li class="flex items-start gap-3 text-sm font-medium text-gray-500">
                             <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 text-primary">
                                 <i data-lucide="phone" class="w-4 h-4"></i>
                             </div>
-                            <span class="mt-1.5">(0267) 123-4567</span>
+                            <span class="mt-1.5">085559443285</span>
                         </li>
                         <li class="flex items-start gap-3 text-sm font-medium text-gray-500">
                             <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 text-primary">
