@@ -40,4 +40,25 @@
         </div>
     </div>
 </section>
+@push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Cek apakah ada sesi OTP yang masih aktif di localStorage
+        let expiry = localStorage.getItem('otp_expiry');
+        let email = localStorage.getItem('otp_email');
+        
+        if (email && expiry) {
+            let now = Date.now();
+            if (now < parseInt(expiry)) {
+                // Masih aktif, otomatis redirect ke halaman verifikasi
+                window.location.href = "{{ route('password.verify.form') }}?email=" + encodeURIComponent(email);
+            } else {
+                // Sudah kadaluarsa, hapus
+                localStorage.removeItem('otp_email');
+                localStorage.removeItem('otp_expiry');
+            }
+        }
+    });
+</script>
+@endpush
 @endsection

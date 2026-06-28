@@ -35,38 +35,65 @@
             </form>
             
             <div class="mt-6 text-center text-sm text-body">
-                Belum menerima kode? <a href="{{ route('password.request') }}" class="text-primary font-medium hover:underline">Kirim Ulang</a>
+                Belum menerima kode? <a href="{{ route('password.request') }}" onclick="clearOtpState()" class="text-primary font-medium hover:underline">Kirim Ulang</a>
+            </div>
+            
+            <div class="mt-4 text-center text-sm">
+                <a href="{{ route('password.request') }}" onclick="clearOtpState()" class="text-danger font-medium hover:underline">Bukan email Anda? Ganti Email</a>
             </div>
         </div>
     </div>
 </section>
 @push('scripts')
 <script>
-    function startTimer(duration, display) {
-        let timer = duration, minutes, seconds;
+    function clearOtpState() {
+        localStorage.removeItem('otp_email');
+        localStorage.removeItem('otp_expiry');
+    }
+
+    function startTimer(display) {
         let countdownInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
+            let expiry = parseInt(localStorage.getItem('otp_expiry'));
+            let now = Date.now();
+            let remainingMs = expiry - now;
+            
+            if (remainingMs <= 0 || isNaN(expiry)) {
+                clearInterval(countdownInterval);
+                display.textContent = "00:00";
+                display.classList.remove('text-primary');
+                display.classList.add('text-danger');
+                clearOtpState();
+                return;
+            }
+
+            let totalSeconds = Math.floor(remainingMs / 1000);
+            let minutes = parseInt(totalSeconds / 60, 10);
+            let seconds = parseInt(totalSeconds % 60, 10);
 
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
 
             display.textContent = minutes + ":" + seconds;
-
-            if (--timer < 0) {
-                clearInterval(countdownInterval);
-                display.textContent = "00:00";
-                display.classList.remove('text-primary');
-                display.classList.add('text-danger');
-            }
         }, 1000);
     }
 
     window.onload = function () {
-        // Asumsi masa berlaku OTP 15 menit
-        let fifteenMinutes = 60 * 15,
-            display = document.querySelector('#countdown');
-        startTimer(fifteenMinutes, display);
+        let display = document.querySelector('#countdown');
+        let email = "{{ request('email') }}";
+        
+        if (email) {
+            let savedEmail = localStorage.getItem('otp_email');
+            let savedExpiry = localStorage.getItem('otp_expiry');
+            let now = Date.now();
+            
+            // Jika email baru atau sesi sudah habis, buat sesi baru 15 menit
+            if (savedEmail !== email || !savedExpiry || now > parseInt(savedExpiry)) {
+                localStorage.setItem('otp_email', email);
+                localStorage.setItem('otp_expiry', now + (15 * 60 * 1000));
+            }
+        }
+        
+        startTimer(display);
     };
 </script>
 @endpush
