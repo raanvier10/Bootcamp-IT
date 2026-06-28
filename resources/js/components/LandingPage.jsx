@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Leaf, MapPin, ShieldCheck, Camera, Sparkles, ArrowRight, Map, ArrowUpRight, Newspaper } from 'lucide-react';
+import { Leaf, MapPin, ShieldCheck, Camera, Sparkles, ArrowRight, Map, ArrowUpRight, Newspaper, Download } from 'lucide-react';
 
 const LandingPage = ({ stats, mapReports, latestArticles, authRoute, mapRoute, articlesRoute, loginRoute, registerRoute }) => {
     const { scrollYProgress } = useScroll();
@@ -91,7 +91,7 @@ const LandingPage = ({ stats, mapReports, latestArticles, authRoute, mapRoute, a
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
                 <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary-soft/50 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none"></div>
 
-                <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32 flex flex-col lg:flex-row items-center gap-16">
+                <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-20 lg:pt-20 lg:pb-32 flex flex-col lg:flex-row items-center gap-16">
                     <motion.div initial="hidden" animate="visible" variants={stagger} className="flex-1 text-left">
                         <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-white border border-gray-200 text-primary text-sm font-bold px-4 py-2 rounded-full mb-8 shadow-sm">
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
@@ -108,13 +108,18 @@ const LandingPage = ({ stats, mapReports, latestArticles, authRoute, mapRoute, a
                             Bersama TrashReport, setiap orang bisa berkontribusi menjaga kebersihan lingkungan. Laporkan tumpukan sampah liar — tim kami dan komunitas akan menanganinya.
                         </motion.p>
 
-                        <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4">
-                            <a href={authRoute} className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-primary rounded-xl hover:bg-primary-deep transition-all shadow-lg shadow-primary/20">
+                        <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 w-full">
+                            <a href={authRoute} className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-bold text-white bg-primary rounded-xl hover:bg-primary-deep transition-all shadow-lg shadow-primary/20">
                                 Buat Laporan Baru <ArrowRight className="w-5 h-5 ml-2" />
                             </a>
-                            <a href={mapRoute} className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all shadow-sm">
-                                <Map className="w-5 h-5 mr-2" /> Lihat Peta
-                            </a>
+                            <div className="flex flex-row gap-3 w-full sm:w-auto">
+                                <a href={mapRoute} className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-bold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all shadow-sm">
+                                    <Map className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Peta
+                                </a>
+                                <a href="/TrashReport.apk" download className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-bold text-[#0D530E] bg-[#DDF5DF] border border-[#0D530E]/20 rounded-xl hover:bg-[#c2edc4] transition-all shadow-sm">
+                                    <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Aplikasi
+                                </a>
+                            </div>
                         </motion.div>
                     </motion.div>
 
@@ -123,28 +128,28 @@ const LandingPage = ({ stats, mapReports, latestArticles, authRoute, mapRoute, a
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className="hidden lg:flex flex-1 relative w-full h-[450px] max-w-none items-center justify-center mt-0"
+                        className="hidden lg:flex flex-1 relative w-full h-[450px] max-w-none items-center justify-center lg:-mt-12"
                     >
                         {/* Animated Background Rings (More Green) */}
                         <motion.div 
                             animate={{ rotate: 360 }} 
                             transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
-                            className="absolute inset-0 m-auto w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] lg:w-[420px] lg:h-[420px] rounded-full border-[1.5px] border-[#0D530E]/20 border-dashed"
+                            className="absolute inset-0 m-auto w-[240px] h-[240px] sm:w-[340px] sm:h-[340px] lg:w-[420px] lg:h-[420px] rounded-full border-[1.5px] border-[#0D530E]/20 border-dashed"
                         />
                         <motion.div 
                             animate={{ rotate: -360 }} 
                             transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-                            className="absolute inset-0 m-auto w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] lg:w-[320px] lg:h-[320px] rounded-full border-[3px] border-t-[#0D530E] border-r-[#0D530E] border-b-[#116B13] border-l-transparent opacity-30 shadow-[0_0_30px_rgba(13,83,14,0.2)]"
+                            className="absolute inset-0 m-auto w-[200px] h-[200px] sm:w-[260px] sm:h-[260px] lg:w-[320px] lg:h-[320px] rounded-full border-[3px] border-t-[#0D530E] border-r-[#0D530E] border-b-[#116B13] border-l-transparent opacity-30 shadow-[0_0_30px_rgba(13,83,14,0.2)]"
                         />
                         
                         {/* Soft Glow Behind */}
-                        <div className="absolute inset-0 m-auto w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] bg-gradient-to-tr from-[#0D530E]/30 to-[#116B13]/30 rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute inset-0 m-auto w-[160px] h-[160px] sm:w-[200px] sm:h-[200px] bg-gradient-to-tr from-[#0D530E]/30 to-[#116B13]/30 rounded-full blur-3xl animate-pulse"></div>
 
                         {/* Central 3D Illustration Mockup */}
                         <motion.div 
                             animate={{ y: [0, -15, 0] }} 
                             transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-                            className="absolute inset-0 m-auto w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px] flex z-10 items-center justify-center pointer-events-none"
+                            className="absolute inset-0 m-auto w-[220px] h-[220px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px] flex z-10 items-center justify-center pointer-events-none"
                         >
                             <img src="/images/hero-illustration.png" alt="Orang melapor sampah 3D" className="w-full h-full object-contain mix-blend-multiply" />
                         </motion.div>
@@ -404,9 +409,12 @@ const LandingPage = ({ stats, mapReports, latestArticles, authRoute, mapRoute, a
                     <h2 className="font-delight font-bold text-5xl lg:text-6xl text-white tracking-tight mb-6">Siap mengambil aksi?</h2>
                     <p className="text-xl text-primary-soft font-medium mb-12 max-w-2xl mx-auto">Satu laporan dari Anda bisa mencegah kerusakan lingkungan yang lebih besar. Jadilah bagian dari solusi hari ini.</p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href={authRoute} className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-primary bg-white rounded-xl hover:bg-gray-50 transition-all shadow-xl">
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center w-full px-2 sm:px-0">
+                        <a href={authRoute} className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-4 sm:px-8 text-base font-bold text-primary bg-white rounded-xl hover:bg-gray-50 transition-all shadow-xl">
                             Buat Laporan Sekarang
+                        </a>
+                        <a href="/TrashReport.apk" download className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-4 sm:px-8 text-base font-bold text-white bg-transparent border-2 border-white/80 hover:border-white rounded-xl hover:bg-white/10 transition-all shadow-xl">
+                            <Download className="w-5 h-5 mr-2" /> Unduh Aplikasi Mobile
                         </a>
                     </div>
                 </div>

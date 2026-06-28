@@ -152,6 +152,19 @@ class LaporanController extends Controller
             ]
         );
 
+        // Jika laporan belum Ditutup, maka otomatis tutup setelah diberi rating
+        if ($laporan->status !== 'Ditutup') {
+            $laporan->update(['status' => 'Ditutup']);
+            
+            \App\Models\RiwayatStatus::create([
+                'laporan_id' => $laporan->id,
+                'status' => 'Ditutup',
+                'catatan' => 'Laporan selesai dan telah diberikan penilaian oleh pelapor via Aplikasi Mobile.',
+                'diubah_oleh' => $user->id,
+                'dibuat_pada' => now()
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Terima kasih atas penilaian Anda!',
