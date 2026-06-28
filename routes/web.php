@@ -23,6 +23,15 @@ Route::get('/artikel/{slug}', [GuestController::class, 'articleDetail'])->name('
 Route::get('/kontak', [GuestController::class, 'contact'])->name('contact');
 Route::post('/kontak', [GuestController::class, 'submitContact'])->name('contact.submit');
 
+// Fallback Route untuk melayani gambar (Mencegah 404 di Shared Hosting tanpa Symlink)
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('path', '.*');
+
 // ── Auth (FR-PU-05) ──
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

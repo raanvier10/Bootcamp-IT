@@ -1,0 +1,1 @@
+import "dart:convert"; import "dart:io"; void main() async { var request = await HttpClient().getUrl(Uri.parse("https://trashreport.web.id/api/artikel")); var response = await request.close(); var body = await response.transform(utf8.decoder).join(); print(body); }
