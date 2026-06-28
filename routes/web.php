@@ -32,6 +32,16 @@ Route::get('/storage/{path}', function ($path) {
     return response()->file($fullPath);
 })->where('path', '.*');
 
+// Rute Darurat untuk Migrate Database di Shared Hosting
+Route::get('/migrate-database-rahasia', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return 'Migrasi Sukses: ' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Gagal: ' . $e->getMessage();
+    }
+});
+
 // ── Auth (FR-PU-05) ──
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
