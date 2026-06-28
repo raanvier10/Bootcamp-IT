@@ -89,6 +89,42 @@ class AdminController extends Controller
         return view('admin.profile', compact('user'));
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'telepon' => 'nullable|string|max:20',
+        ]);
+
+        $user->update([
+            'name' => $request->nama,
+            'email' => $request->email,
+            'telepon' => $request->telepon,
+        ]);
+
+        return back()->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
+        ]);
+
+        $user = auth()->user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Kata sandi saat ini salah.']);
+        }
+
+        $user->update(['password' => \Illuminate\Support\Facades\Hash::make($request->password)]);
+
+        return back()->with('success', 'Kata sandi berhasil diperbarui.');
+    }
+
     public function storeOfficer(Request $request)
     {
         $request->validate([
@@ -133,5 +169,18 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.officers')->with('success', 'Data petugas berhasil diperbarui.');
+    }
+
+    public function destroyOfficer($id)
+    {
+        $officer = \App\Models\User::where('peran', 'Petugas')->findOrFail($id);
+        
+        // Cek jika sudah pernah menangani laporan
+        if (\App\Models\Laporan::where('petugas_id', $id)->exists()) {
+            return back()->with('error', 'Petugas ini tidak dapat dihapus karena memiliki riwayat menangani laporan.');
+        }
+
+        $officer->delete();
+        return back()->with('success', 'Data petugas berhasil dihapus.');
     }
 }

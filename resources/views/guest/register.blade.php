@@ -30,12 +30,23 @@
                 </div>
                 <div>
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" name="password" id="password" placeholder="Minimal 8 karakter" class="form-input" required>
+                    <div class="relative">
+                        <input type="password" name="password" id="password" placeholder="Minimal 8 karakter" class="form-input w-full pr-10" required>
+                        <button type="button" onclick="togglePassword('password', 'eye-icon-1')" class="absolute inset-y-0 right-0 px-3 flex items-center text-mute hover:text-ink transition-colors">
+                            <i data-lucide="eye" id="eye-icon-1" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-mute mt-2">Gunakan kombinasi huruf (huruf besar dan kecil), angka, dan karakter khusus (!@#$)</p>
                     @error('password')<p class="form-error">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Ulangi password" class="form-input" required>
+                    <div class="relative">
+                        <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Ulangi password" class="form-input w-full pr-10" required>
+                        <button type="button" onclick="togglePassword('password_confirmation', 'eye-icon-2')" class="absolute inset-y-0 right-0 px-3 flex items-center text-mute hover:text-ink transition-colors">
+                            <i data-lucide="eye" id="eye-icon-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit" class="btn-primary w-full" id="register-submit-btn">
                     <i data-lucide="user-plus" class="w-4 h-4"></i>
@@ -46,4 +57,21 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+<script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.outerHTML = `<i data-lucide="eye-off" id="${iconId}" class="w-5 h-5"></i>`;
+        } else {
+            input.type = 'password';
+            icon.outerHTML = `<i data-lucide="eye" id="${iconId}" class="w-5 h-5"></i>`;
+        }
+        lucide.createIcons();
+    }
+</script>
+@endpush
 @endsection

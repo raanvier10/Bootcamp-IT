@@ -128,6 +128,24 @@
             </header>
 
             {{-- Flash Messages --}}
+            @if($errors->any())
+                <div class="px-6 pt-4">
+                    <div class="alert-error animate-fade-in" id="flash-error-val">
+                        <div class="flex items-start gap-2">
+                            <i data-lucide="alert-circle" class="w-5 h-5 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">Terdapat kesalahan pada isian Anda:</span>
+                                <ul class="list-disc pl-5 mt-1 text-sm">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @if(session('success'))
                 <div class="px-6 pt-4">
                     <div class="alert-success animate-fade-in" id="flash-success">

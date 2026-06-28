@@ -30,7 +30,7 @@
                             <i data-lucide="eye" id="eye-icon-1" class="w-5 h-5"></i>
                         </button>
                     </div>
-                    <p class="text-xs text-mute mt-2">Gunakan kombinasi huruf, angka, dan karakter khusus (!@#$)</p>
+                    <p class="text-xs text-mute mt-2">Gunakan kombinasi huruf (huruf besar dan kecil), angka, dan karakter khusus (!@#$)</p>
                     @error('password')<p class="form-error">{{ $message }}</p>@enderror
                 </div>
                 
@@ -60,10 +60,10 @@
         const icon = document.getElementById(iconId);
         if (input.type === 'password') {
             input.type = 'text';
-            icon.setAttribute('data-lucide', 'eye-off');
+            icon.outerHTML = `<i data-lucide="eye-off" id="${iconId}" class="w-5 h-5"></i>`;
         } else {
             input.type = 'password';
-            icon.setAttribute('data-lucide', 'eye');
+            icon.outerHTML = `<i data-lucide="eye" id="${iconId}" class="w-5 h-5"></i>`;
         }
         lucide.createIcons();
     }

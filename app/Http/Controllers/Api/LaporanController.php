@@ -67,6 +67,13 @@ class LaporanController extends Controller
         // Buat Kode Laporan
         $kode_laporan = Laporan::buatKode();
 
+        $prioritas = 'Sedang'; // Default
+        if ($request->kategori_id == 4) { // Limbah Medis
+            $prioritas = 'Mendesak';
+        } elseif ($request->kategori_id == 7) { // Sampah Besar
+            $prioritas = 'Tinggi';
+        }
+
         $laporan = Laporan::create([
             'kode_laporan' => $kode_laporan,
             'user_id' => $user->id,
@@ -77,7 +84,7 @@ class LaporanController extends Controller
             'lintang' => $request->lintang,
             'bujur' => $request->bujur,
             'alamat' => $request->alamat,
-            'prioritas' => 'Sedang', // Default, admin bisa ubah
+            'prioritas' => $prioritas,
             'status' => 'Menunggu',
             'dilaporkan_pada' => now(),
             'dibuat_pada' => now(),

@@ -19,13 +19,7 @@ class AuthController extends Controller
         return view('guest.login');
     }
 
-    /**
-     * Tampilkan form login khusus admin/petugas
-     */
-    public function showAdminLogin()
-    {
-        return view('guest.admin-login');
-    }
+
 
     /**
      * Proses login

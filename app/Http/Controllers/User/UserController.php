@@ -73,6 +73,13 @@ class UserController extends Controller
             'photo'       => ['required', 'image', 'max:5120'],
         ]);
 
+        $prioritas = 'Sedang'; // Default
+        if ($request->category_id == 4) { // Limbah Medis
+            $prioritas = 'Mendesak';
+        } elseif ($request->category_id == 7) { // Sampah Besar
+            $prioritas = 'Tinggi';
+        }
+
         $laporan = Laporan::create([
             'kode_laporan' => Laporan::buatKode(),
             'user_id'      => Auth::id(),
@@ -83,6 +90,7 @@ class UserController extends Controller
             'lintang'      => $request->latitude,
             'bujur'        => $request->longitude,
             'alamat'       => $request->address,
+            'prioritas'    => $prioritas,
             'status'       => 'Menunggu',
             'dilaporkan_pada' => now(),
         ]);

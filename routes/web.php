@@ -26,7 +26,7 @@ Route::post('/kontak', [GuestController::class, 'submitContact'])->name('contact
 // ── Auth (FR-PU-05) ──
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
+
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
@@ -68,7 +68,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/petugas', [\App\Http\Controllers\Admin\AdminController::class, 'officers'])->name('officers');
     Route::post('/petugas', [\App\Http\Controllers\Admin\AdminController::class, 'storeOfficer'])->name('officers.store');
     Route::put('/petugas/{id}', [\App\Http\Controllers\Admin\AdminController::class, 'updateOfficer'])->name('officers.update');
+    Route::delete('/petugas/{id}', [\App\Http\Controllers\Admin\AdminController::class, 'destroyOfficer'])->name('officers.destroy');
     Route::get('/profil', [\App\Http\Controllers\Admin\AdminController::class, 'profile'])->name('profile');
+    Route::put('/profil', [\App\Http\Controllers\Admin\AdminController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profil/password', [\App\Http\Controllers\Admin\AdminController::class, 'updatePassword'])->name('profile.password');
     
     // Master Data & Kotak Masuk
     Route::get('/wilayah', [\App\Http\Controllers\Admin\AdminDataController::class, 'districts'])->name('districts');

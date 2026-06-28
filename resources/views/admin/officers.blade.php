@@ -110,10 +110,19 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <button class="btn-secondary-sm inline-flex items-center gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity" 
-                            onclick="openEditModal({{ $officer->id }}, '{{ addslashes($officer->name) }}', '{{ addslashes($officer->telepon) }}', '{{ $officer->wilayah_id }}', {{ $officer->aktif ? 'true' : 'false' }})">
-                            <i data-lucide="edit" class="w-4 h-4"></i> Edit
-                        </button>
+                        <div class="flex items-center justify-end gap-2">
+                            <button class="btn-secondary-sm inline-flex items-center gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity" 
+                                onclick="openEditModal({{ $officer->id }}, '{{ addslashes($officer->name) }}', '{{ addslashes($officer->telepon) }}', '{{ $officer->wilayah_id }}', {{ $officer->aktif ? 'true' : 'false' }})">
+                                <i data-lucide="edit" class="w-4 h-4"></i> Edit
+                            </button>
+                            <form action="{{ route('admin.officers.destroy', $officer->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus petugas ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-secondary-sm text-error border-error/20 hover:bg-error-soft inline-flex items-center gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity" title="Hapus Petugas">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -218,7 +227,12 @@
                 
                 <div>
                     <label class="block text-[11px] font-bold text-mute uppercase tracking-widest mb-1.5">Kata Sandi</label>
-                    <input type="password" name="password" class="form-input w-full bg-white border-hairline rounded-xl py-2 px-3 text-sm focus:ring-primary focus:border-primary shadow-sm" required minlength="8">
+                    <div class="relative">
+                        <input type="password" name="password" id="add-password" class="form-input w-full bg-white border-hairline rounded-xl py-2 px-3 pr-10 text-sm focus:ring-primary focus:border-primary shadow-sm" required minlength="8">
+                        <button type="button" onclick="togglePassword('add-password', 'eye-icon-add')" class="absolute inset-y-0 right-0 px-3 flex items-center text-mute hover:text-ink transition-colors">
+                            <i data-lucide="eye" id="eye-icon-add" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div>
@@ -255,6 +269,19 @@
 
 @push('scripts')
 <script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.outerHTML = `<i data-lucide="eye-off" id="${iconId}" class="w-4 h-4"></i>`;
+        } else {
+            input.type = 'password';
+            icon.outerHTML = `<i data-lucide="eye" id="${iconId}" class="w-4 h-4"></i>`;
+        }
+        lucide.createIcons();
+    }
+    
     // Edit Modal
     function openEditModal(id, nama, telepon, wilayahId, isAktif) {
         const modal = document.getElementById('edit-modal');

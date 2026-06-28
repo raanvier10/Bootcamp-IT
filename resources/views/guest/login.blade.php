@@ -8,7 +8,7 @@
                 <img src="{{ asset('images/logo.png') }}" alt="TrashReport Logo" class="h-12 w-auto" />
             </div>
             <h1 class="text-2xl font-semibold text-ink tracking-tight mb-2" style="letter-spacing:-0.8px">Masuk ke TrashReport</h1>
-            <p class="text-body">Masuk untuk mulai melaporkan sampah liar di sekitar Anda.</p>
+            <p class="text-body">Masuk ke akun Anda untuk mengakses sistem TrashReport.</p>
         </div>
         <div class="bg-canvas p-8 rounded-xl shadow-card-lg border border-hairline">
             <form method="POST" action="{{ route('login') }}" class="space-y-5" id="login-form">
@@ -43,9 +43,7 @@
             <p class="text-center text-sm text-body mt-6">Belum punya akun? <a href="{{ route('register') }}" class="text-primary font-medium hover:underline">Daftar sekarang</a></p>
         </div>
 
-        <div class="mt-6 text-center">
-            <a href="{{ route('admin.login') }}" class="text-xs text-mute hover:text-primary transition-colors font-medium"><i data-lucide="shield" class="w-3.5 h-3.5 inline mr-1 -mt-0.5"></i>Masuk sebagai Petugas / Admin</a>
-        </div>
+
     </div>
 </section>
 
@@ -56,10 +54,10 @@
         const icon = document.getElementById(iconId);
         if (input.type === 'password') {
             input.type = 'text';
-            icon.setAttribute('data-lucide', 'eye-off');
+            icon.outerHTML = `<i data-lucide="eye-off" id="${iconId}" class="w-5 h-5"></i>`;
         } else {
             input.type = 'password';
-            icon.setAttribute('data-lucide', 'eye');
+            icon.outerHTML = `<i data-lucide="eye" id="${iconId}" class="w-5 h-5"></i>`;
         }
         lucide.createIcons();
     }

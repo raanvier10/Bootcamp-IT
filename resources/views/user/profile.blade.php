@@ -115,7 +115,10 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i data-lucide="key-round" class="w-4 h-4 text-mute"></i>
                             </div>
-                            <input type="password" name="current_password" id="current_password" class="form-input pl-10 h-11 rounded-xl" required placeholder="••••••••">
+                            <input type="password" name="current_password" id="current_password" class="form-input pl-10 pr-10 h-11 rounded-xl" required placeholder="••••••••">
+                            <button type="button" onclick="togglePassword('current_password', 'eye-icon-1')" class="absolute inset-y-0 right-0 px-3 flex items-center text-mute hover:text-ink transition-colors">
+                                <i data-lucide="eye" id="eye-icon-1" class="w-5 h-5"></i>
+                            </button>
                         </div>
                         @error('current_password')<p class="form-error">{{ $message }}</p>@enderror
                     </div>
@@ -126,8 +129,12 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i data-lucide="shield" class="w-4 h-4 text-mute"></i>
                             </div>
-                            <input type="password" name="password" id="password" placeholder="Minimal 8 karakter" class="form-input pl-10 h-11 rounded-xl" required>
+                            <input type="password" name="password" id="password" placeholder="Minimal 8 karakter" class="form-input pl-10 pr-10 h-11 rounded-xl" required>
+                            <button type="button" onclick="togglePassword('password', 'eye-icon-2')" class="absolute inset-y-0 right-0 px-3 flex items-center text-mute hover:text-ink transition-colors">
+                                <i data-lucide="eye" id="eye-icon-2" class="w-5 h-5"></i>
+                            </button>
                         </div>
+                        <p class="text-xs text-mute mt-2">Gunakan kombinasi huruf (huruf besar dan kecil), angka, dan karakter khusus (!@#$)</p>
                         @error('password')<p class="form-error">{{ $message }}</p>@enderror
                     </div>
 
@@ -137,7 +144,10 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i data-lucide="shield-check" class="w-4 h-4 text-mute"></i>
                             </div>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-input pl-10 h-11 rounded-xl" required placeholder="Minimal 8 karakter">
+                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-input pl-10 pr-10 h-11 rounded-xl" required placeholder="Minimal 8 karakter">
+                            <button type="button" onclick="togglePassword('password_confirmation', 'eye-icon-3')" class="absolute inset-y-0 right-0 px-3 flex items-center text-mute hover:text-ink transition-colors">
+                                <i data-lucide="eye" id="eye-icon-3" class="w-5 h-5"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -165,6 +175,19 @@
             
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.outerHTML = `<i data-lucide="eye-off" id="${iconId}" class="w-5 h-5"></i>`;
+        } else {
+            input.type = 'password';
+            icon.outerHTML = `<i data-lucide="eye" id="${iconId}" class="w-5 h-5"></i>`;
+        }
+        lucide.createIcons();
     }
 </script>
 @endpush

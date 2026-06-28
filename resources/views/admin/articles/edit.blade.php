@@ -123,6 +123,21 @@
             }
         });
 
+        // Add Tooltips for Quill Toolbar
+        const tooltips = {
+            'bold': 'Tebal (Bold)', 'italic': 'Miring (Italic)', 'underline': 'Garis Bawah (Underline)', 'strike': 'Coret (Strikethrough)',
+            'blockquote': 'Kutipan (Quote)', 'code-block': 'Blok Kode (Code Block)', 'link': 'Tautan (Link)', 'image': 'Gambar (Image)',
+            'video': 'Video', 'clean': 'Hapus Format (Clean Formatting)'
+        };
+        for (const [format, title] of Object.entries(tooltips)) {
+            const btn = document.querySelector(`.ql-${format}`);
+            if (btn) btn.setAttribute('title', title);
+        }
+        const listOrdered = document.querySelector('.ql-list[value="ordered"]');
+        if (listOrdered) listOrdered.setAttribute('title', 'Daftar Angka (Ordered List)');
+        const listBullet = document.querySelector('.ql-list[value="bullet"]');
+        if (listBullet) listBullet.setAttribute('title', 'Daftar Titik (Bullet List)');
+
         const form = document.getElementById('article-form');
         form.addEventListener('submit', function(e) {
             const isiHidden = document.getElementById('isi_hidden');

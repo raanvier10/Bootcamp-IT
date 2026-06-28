@@ -25,6 +25,7 @@
                 <div>
                     <label for="token" class="form-label text-center block">Kode OTP (6 Angka)</label>
                     <input type="text" name="token" id="token" placeholder="123456" maxlength="6" class="form-input text-2xl" required autofocus style="letter-spacing: 12px; font-weight: bold; text-align: center; padding-left: 20px;">
+                    <p class="text-center text-sm text-body mt-3">Berlaku selama: <span id="countdown" class="font-bold text-primary">15:00</span></p>
                     @error('token')<p class="form-error text-center mt-2">{{ $message }}</p>@enderror
                 </div>
                 
@@ -39,4 +40,34 @@
         </div>
     </div>
 </section>
+@push('scripts')
+<script>
+    function startTimer(duration, display) {
+        let timer = duration, minutes, seconds;
+        let countdownInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(countdownInterval);
+                display.textContent = "00:00";
+                display.classList.remove('text-primary');
+                display.classList.add('text-danger');
+            }
+        }, 1000);
+    }
+
+    window.onload = function () {
+        // Asumsi masa berlaku OTP 15 menit
+        let fifteenMinutes = 60 * 15,
+            display = document.querySelector('#countdown');
+        startTimer(fifteenMinutes, display);
+    };
+</script>
+@endpush
 @endsection
