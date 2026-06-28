@@ -21,6 +21,7 @@ class User extends Authenticatable
         'foto_profil',
         'kode_pegawai',
         'aktif',
+        'fcm_token',
     ];
 
     protected $hidden = [
@@ -95,5 +96,26 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         return $this->foto_profil_url;
+    }
+
+    // ── FCM Helper ──
+    public function sendPushNotification(string $title, string $body, array $data = []): bool
+    {
+        if (!$this->fcm_token) {
+            return false;
+        }
+
+        try {
+            $messaging = app('firebase.messaging');
+            $message = \Kreait\Firebase\Messaging\CloudMessage::withTarget('token', $this->fcm_token)
+                ->withNotification(\Kreait\Firebase\Messaging\Notification::create($title, $body))
+                ->withData($data);
+                
+            $messaging->send($message);
+            return true;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('FCM Push Error: ' . $e->getMessage());
+            return false;
+        }
     }
 }

@@ -85,28 +85,44 @@ class TugasController extends Controller
                 }
                 
                 // Kirim notifikasi ke pelapor
+                $judulSelesai = 'Tumpukan Sampah Selesai Dibersihkan';
+                $pesanSelesai = "Laporan Anda dengan kode {$laporan->kode_laporan} telah dikerjakan oleh Petugas. Silakan cek foto bukti dan lakukan konfirmasi.";
+                
                 \App\Models\Notifikasi::create([
                     'user_id' => $laporan->user_id,
-                    'judul' => 'Tumpukan Sampah Selesai Dibersihkan',
-                    'pesan' => "Laporan Anda dengan kode {$laporan->kode_laporan} telah dikerjakan oleh Petugas. Silakan cek foto bukti dan lakukan konfirmasi.",
+                    'judul' => $judulSelesai,
+                    'pesan' => $pesanSelesai,
                     'tipe' => 'selesai',
                     'sudah_dibaca' => false,
                     'dibuat_pada' => now()
                 ]);
+                
+                // FCM Push Notification
+                $pelapor = \App\Models\User::find($laporan->user_id);
+                if ($pelapor) {
+                    $pelapor->sendPushNotification($judulSelesai, $pesanSelesai, ['laporan_id' => $laporan->id]);
+                }
             } elseif (strtolower($laporan->status) == 'sedang dibersihkan' || strtolower($laporan->status) == 'dalam perjalanan') {
                 // Kirim notifikasi ke pelapor bahwa laporan sedang diproses
                 $pesan = strtolower($laporan->status) == 'dalam perjalanan' 
                     ? "Petugas sedang dalam perjalanan menuju lokasi tumpukan sampah pada laporan {$laporan->kode_laporan}."
                     : "Petugas telah tiba dan sedang membersihkan tumpukan sampah pada laporan {$laporan->kode_laporan}.";
                     
+                $judulProses = 'Petugas Bergerak';
                 \App\Models\Notifikasi::create([
                     'user_id' => $laporan->user_id,
-                    'judul' => 'Petugas Bergerak',
+                    'judul' => $judulProses,
                     'pesan' => $pesan,
                     'tipe' => 'proses',
                     'sudah_dibaca' => false,
                     'dibuat_pada' => now()
                 ]);
+                
+                // FCM Push Notification
+                $pelapor = \App\Models\User::find($laporan->user_id);
+                if ($pelapor) {
+                    $pelapor->sendPushNotification($judulProses, $pesan, ['laporan_id' => $laporan->id]);
+                }
             }
 
             $laporan->save();
