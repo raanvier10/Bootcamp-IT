@@ -22,6 +22,10 @@ class AdminDataController extends Controller
         $request->validate([
             'kode' => 'required|string|max:50|unique:wilayah',
             'nama' => 'required|string|max:100',
+        ], [
+            'kode.unique' => 'Kode wilayah ini sudah digunakan. Silakan gunakan kode lain.',
+            'kode.required' => 'Kode wilayah wajib diisi.',
+            'nama.required' => 'Nama wilayah wajib diisi.',
         ]);
 
         Wilayah::create([
@@ -37,6 +41,10 @@ class AdminDataController extends Controller
         $request->validate([
             'kode' => 'required|string|max:50|unique:wilayah,kode,' . $id,
             'nama' => 'required|string|max:100',
+        ], [
+            'kode.unique' => 'Kode wilayah ini sudah digunakan oleh wilayah lain.',
+            'kode.required' => 'Kode wilayah wajib diisi.',
+            'nama.required' => 'Nama wilayah wajib diisi.',
         ]);
 
         $wilayah = Wilayah::findOrFail($id);
@@ -72,6 +80,9 @@ class AdminDataController extends Controller
         $request->validate([
             'nama' => 'required|string|max:100|unique:kategori',
             'deskripsi' => 'nullable|string',
+        ], [
+            'nama.unique' => 'Nama kategori ini sudah ada. Silakan gunakan nama lain.',
+            'nama.required' => 'Nama kategori wajib diisi.',
         ]);
 
         Kategori::create([
@@ -87,6 +98,9 @@ class AdminDataController extends Controller
         $request->validate([
             'nama' => 'required|string|max:100|unique:kategori,nama,' . $id,
             'deskripsi' => 'nullable|string',
+        ], [
+            'nama.unique' => 'Nama kategori ini sudah digunakan oleh kategori lain.',
+            'nama.required' => 'Nama kategori wajib diisi.',
         ]);
 
         $kategori = Kategori::findOrFail($id);

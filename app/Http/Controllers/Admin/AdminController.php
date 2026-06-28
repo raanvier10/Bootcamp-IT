@@ -96,6 +96,10 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'telepon' => 'nullable|string|max:20',
+        ], [
+            'email.unique' => 'Alamat email ini sudah digunakan oleh akun lain.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'nama.required' => 'Nama lengkap wajib diisi.',
         ]);
 
         $user->update([
@@ -112,6 +116,11 @@ class AdminController extends Controller
         $request->validate([
             'current_password' => 'required',
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols()],
+        ], [
+            'current_password.required' => 'Kata sandi saat ini wajib diisi.',
+            'password.required' => 'Kata sandi baru wajib diisi.',
+            'password.confirmed' => 'Konfirmasi kata sandi baru tidak cocok.',
+            'password.min' => 'Kata sandi minimal harus 8 karakter.',
         ]);
 
         $user = auth()->user();
