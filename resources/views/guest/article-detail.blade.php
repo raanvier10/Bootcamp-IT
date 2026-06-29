@@ -42,9 +42,15 @@
 
         {{-- Article Content --}}
         <style>
-            #article-content p, #article-content div {
-                text-align: justify !important;
+            /* Default untuk paragraf */
+            #article-content p {
+                text-align: justify;
             }
+            /* Mendukung format alignment dari editor (Quill) */
+            #article-content .ql-align-center { text-align: center !important; }
+            #article-content .ql-align-right { text-align: right !important; }
+            #article-content .ql-align-justify { text-align: justify !important; }
+            #article-content .ql-align-left { text-align: left !important; }
         </style>
         <div class="prose prose-lg max-w-none mb-12
                      prose-headings:font-jakarta prose-headings:font-semibold prose-headings:text-ink prose-headings:tracking-tight
