@@ -42,9 +42,10 @@
 
         {{-- Article Content --}}
         <style>
-            /* Default untuk paragraf */
-            #article-content p {
-                text-align: justify;
+            /* Default untuk paragraf & div (jika tidak ada align khusus dari editor) */
+            #article-content p:not([class*="ql-align-"]),
+            #article-content div:not([class*="ql-align-"]) {
+                text-align: justify !important;
             }
             /* Mendukung format alignment dari editor (Quill) */
             #article-content .ql-align-center { text-align: center !important; }
