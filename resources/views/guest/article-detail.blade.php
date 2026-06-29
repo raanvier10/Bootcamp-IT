@@ -52,15 +52,21 @@
             #article-content .ql-align-right { text-align: right !important; }
             #article-content .ql-align-justify { text-align: justify !important; }
             #article-content .ql-align-left { text-align: left !important; }
+            
+            /* Mengembalikan format Rich Text yang dihapus oleh Tailwind Reset */
+            #article-content h1 { font-size: 2.25rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; line-height: 1.2; color: #111827; }
+            #article-content h2 { font-size: 1.875rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 1rem; line-height: 1.3; color: #111827; }
+            #article-content h3 { font-size: 1.5rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.4; color: #111827; }
+            #article-content p { margin-bottom: 1.25rem; line-height: 1.75; color: #374151; }
+            #article-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; color: #374151; }
+            #article-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.25rem; color: #374151; }
+            #article-content li { margin-bottom: 0.5rem; }
+            #article-content blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; font-style: italic; color: #6b7280; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+            #article-content a { color: #0D530E; text-decoration: underline; }
+            #article-content strong, #article-content b { font-weight: 700; color: #111827; }
+            #article-content img { border-radius: 0.75rem; margin-top: 1.5rem; margin-bottom: 1.5rem; max-width: 100%; height: auto; box-shadow: 0px 1px 1px rgba(0,0,0,0.02), 0px 2px 2px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(0,0,0,0.08); }
         </style>
-        <div class="prose prose-lg max-w-none mb-12
-                     prose-headings:font-jakarta prose-headings:font-semibold prose-headings:text-ink prose-headings:tracking-tight
-                     prose-p:text-body prose-p:leading-relaxed
-                     prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                     prose-strong:text-ink
-                     prose-ul:text-body prose-ol:text-body
-                     prose-img:rounded-xl prose-img:shadow-card-sm
-                     " id="article-content">
+        <div id="article-content" class="mb-12">
             {!! $article->isi !!}
         </div>
 
