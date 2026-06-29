@@ -49,12 +49,61 @@
             font-weight: bold;
         }
         .text-center { text-align: center; }
+        .summary-container {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            background-color: #f8fafc;
+        }
+        .summary-item {
+            display: table-cell;
+            text-align: center;
+            padding: 10px;
+            border-right: 1px solid #ddd;
+        }
+        .summary-item:last-child {
+            border-right: none;
+        }
+        .summary-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .summary-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #16a34a;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>TrashReport - Rekapitulasi Laporan Masuk</h1>
         <p>Dicetak pada: {{ now()->format('d M Y, H:i') }}</p>
+    </div>
+
+    <div class="summary-container">
+        <div class="summary-item">
+            <div class="summary-label">Menunggu</div>
+            <div class="summary-value">{{ $laporans->where('status', 'Menunggu')->count() }}</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-label">Selesai</div>
+            <div class="summary-value">{{ $laporans->where('status', 'Selesai')->count() }}</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-label">Ditutup</div>
+            <div class="summary-value">{{ $laporans->where('status', 'Ditutup')->count() }}</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-label">Ditolak</div>
+            <div class="summary-value">{{ $laporans->where('status', 'Ditolak')->count() }}</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-label">Total Data</div>
+            <div class="summary-value" style="color: #333;">{{ $laporans->count() }}</div>
+        </div>
     </div>
 
     <table>

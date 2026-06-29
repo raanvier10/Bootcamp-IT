@@ -19,10 +19,34 @@ class ReportController extends Controller
             $query->where('kategori_id', $request->kategori_id);
         }
 
+        if ($request->filled('wilayah_id') && $request->wilayah_id !== 'Semua Wilayah') {
+            $query->where('wilayah_id', $request->wilayah_id);
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('dilaporkan_pada', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('kode_laporan', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($qUser) use ($search) {
+                      $qUser->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('kategori', function($qKat) use ($search) {
+                      $qKat->where('nama', 'like', "%{$search}%");
+                  });
+            });
+        }
+
         $laporans = $query->latest('dilaporkan_pada')->paginate(15);
         $categories = \App\Models\Kategori::all();
+        $wilayahs = \App\Models\Wilayah::all();
 
-        return view('admin.reports', compact('laporans', 'categories'));
+        return view('admin.reports', compact('laporans', 'categories', 'wilayahs'));
     }
 
     public function exportPdf(Request $request)
@@ -36,9 +60,28 @@ class ReportController extends Controller
         if ($request->filled('kategori_id') && $request->kategori_id !== 'Semua Kategori') {
             $query->where('kategori_id', $request->kategori_id);
         }
+
+        if ($request->filled('wilayah_id') && $request->wilayah_id !== 'Semua Wilayah') {
+            $query->where('wilayah_id', $request->wilayah_id);
+        }
         
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('dilaporkan_pada', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('kode_laporan', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($qUser) use ($search) {
+                      $qUser->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('kategori', function($qKat) use ($search) {
+                      $qKat->where('nama', 'like', "%{$search}%");
+                  });
+            });
         }
 
         $laporans = $query->latest('dilaporkan_pada')->get();
