@@ -41,7 +41,12 @@
         @endif
 
         {{-- Article Content --}}
-        <div class="prose prose-lg max-w-none mb-12 text-justify prose-p:text-justify
+        <style>
+            #article-content p, #article-content div {
+                text-align: justify !important;
+            }
+        </style>
+        <div class="prose prose-lg max-w-none mb-12
                      prose-headings:font-jakarta prose-headings:font-semibold prose-headings:text-ink prose-headings:tracking-tight
                      prose-p:text-body prose-p:leading-relaxed
                      prose-a:text-primary prose-a:no-underline hover:prose-a:underline
