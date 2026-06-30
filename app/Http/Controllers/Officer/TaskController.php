@@ -67,6 +67,11 @@ class TaskController extends Controller
                 'sudah_dibaca' => false,
                 'dibuat_pada' => now()
             ]);
+
+            $pelapor = \App\Models\User::find($laporan->user_id);
+            if ($pelapor) {
+                $pelapor->sendPushNotification("Petugas Menuju Lokasi", "Petugas sedang dalam perjalanan ke lokasi laporan Anda ({$laporan->kode_laporan}).", ['laporan_id' => $laporan->id]);
+            }
             return back()->with('success', 'Status diperbarui: Anda sedang dalam perjalanan menuju lokasi.');
         } 
         
@@ -86,6 +91,11 @@ class TaskController extends Controller
                 'sudah_dibaca' => false,
                 'dibuat_pada' => now()
             ]);
+
+            $pelapor = \App\Models\User::find($laporan->user_id);
+            if ($pelapor) {
+                $pelapor->sendPushNotification("Pembersihan Dimulai", "Petugas telah tiba di lokasi dan mulai membersihkan sampah untuk laporan Anda ({$laporan->kode_laporan}).", ['laporan_id' => $laporan->id]);
+            }
             return back()->with('success', 'Status diperbarui: Mulai proses pembersihan.');
         } 
         
@@ -125,6 +135,11 @@ class TaskController extends Controller
                 'sudah_dibaca' => false,
                 'dibuat_pada' => now()
             ]);
+
+            $pelapor = \App\Models\User::find($laporan->user_id);
+            if ($pelapor) {
+                $pelapor->sendPushNotification("Laporan Selesai", "Laporan Anda ({$laporan->kode_laporan}) telah selesai ditangani. Terima kasih atas partisipasinya!", ['laporan_id' => $laporan->id]);
+            }
 
             return back()->with('success', 'Tugas berhasil diselesaikan! Terima kasih atas kerja keras Anda.');
         }

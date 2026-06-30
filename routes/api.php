@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
     Route::post('/profil/update', [\App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
     Route::post('/profil/password', [\App\Http\Controllers\Api\AuthController::class, 'updatePassword']);
+    Route::post('/update-fcm-token', [\App\Http\Controllers\Api\AuthController::class, 'updateFcmToken']);
 
     // Data Master untuk Form Laporan (Mobile)
     Route::get('/kategori', function () {
