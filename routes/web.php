@@ -80,6 +80,8 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
 // ── Admin Routes (FR-AD-01 to FR-AD-16) ──
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/prediksi-tps', [\App\Http\Controllers\Admin\AdminController::class, 'tpsAlarms'])->name('tps_alarms');
+    Route::post('/prediksi-tps/dismiss', [\App\Http\Controllers\Admin\AdminController::class, 'dismissTpsAlarm'])->name('tps_alarms.dismiss');
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports');
     Route::get('/laporan/export-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'exportPdf'])->name('reports.export_pdf');
     Route::get('/laporan/{id}', [\App\Http\Controllers\Admin\ReportController::class, 'show'])->name('reports.show');

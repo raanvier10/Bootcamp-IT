@@ -73,42 +73,30 @@
     
     {{-- FR-AD-12 Alarm TPS Liar Predictor --}}
     @if(isset($tpsLiarAlarms) && $tpsLiarAlarms->count() > 0)
-    <div class="bg-error-soft border border-error/30 rounded-[24px] p-6 shadow-sm animate-fade-in-up stagger-1 flex flex-col gap-4 relative overflow-hidden">
+    <div class="bg-error-soft border border-error/30 rounded-[24px] p-6 shadow-sm animate-fade-in-up stagger-1 relative overflow-hidden">
         <div class="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-64 h-64 bg-error/10 rounded-full blur-3xl pointer-events-none"></div>
         
-        <div class="flex items-start gap-4 relative z-10">
-            <div class="w-12 h-12 rounded-full bg-error text-white flex items-center justify-center shrink-0 shadow-inner">
-                <i data-lucide="siren" class="w-6 h-6 animate-pulse"></i>
-            </div>
-            <div class="flex-1">
-                <h2 class="text-xl font-bold text-error-dark mb-1 flex items-center gap-2">
-                    Alarm Prediksi TPS Liar Baru
-                    <span class="bg-error text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-widest">{{ $tpsLiarAlarms->count() }} Titik Rawan</span>
-                </h2>
-                <p class="text-sm text-error-dark/80 mb-4 max-w-3xl">
-                    Sistem mendeteksi ada area yang terus-menerus dilaporkan kotor (lebih dari 3 kali dalam sebulan terakhir). Area ini direkomendasikan untuk tindakan pencegahan permanen seperti pemasangan spanduk larangan atau tong sampah baru.
-                </p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($tpsLiarAlarms as $alarm)
-                    <div class="bg-white/80 backdrop-blur-md rounded-[16px] p-4 border border-error/20 shadow-sm">
-                        <div class="flex items-center gap-2 mb-2">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-error shrink-0"></i>
-                            <p class="text-sm font-bold text-ink truncate">{{ $alarm->center_report->alamat }}</p>
-                        </div>
-                        <p class="text-[11px] text-mute mb-3">{{ $alarm->center_report->wilayah?->nama ?? 'Tidak diketahui' }}</p>
-                        
-                        <div class="flex items-center justify-between bg-canvas-soft rounded-lg p-2.5 border border-hairline">
-                            <span class="text-xs font-semibold text-body">Tingkat Kerawanan:</span>
-                            <span class="text-xs font-black text-error">{{ $alarm->count }} Laporan / Bln</span>
-                        </div>
-                        
-                        <a href="https://maps.google.com/?q={{ $alarm->center_report->lintang }},{{ $alarm->center_report->bujur }}" target="_blank" class="mt-3 btn-secondary-sm w-full justify-center bg-white border-error/20 text-error hover:bg-error-soft transition-colors">
-                            <i data-lucide="map" class="w-4 h-4"></i> Lihat Titik di Peta
-                        </a>
-                    </div>
-                    @endforeach
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div class="flex items-start gap-4 flex-1">
+                <div class="w-12 h-12 rounded-full bg-error text-white flex items-center justify-center shrink-0 shadow-inner mt-0.5">
+                    <i data-lucide="siren" class="w-6 h-6 animate-pulse"></i>
                 </div>
+                <div>
+                    <h2 class="text-xl font-bold text-error-dark mb-1 flex items-center gap-2">
+                        Alarm Prediksi TPS Liar Baru
+                        <span class="bg-error text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-widest">{{ $tpsLiarAlarms->count() }} Titik Rawan</span>
+                    </h2>
+                    <p class="text-sm text-error-dark/80 max-w-3xl m-0">
+                        Sistem mendeteksi ada area yang terus-menerus dilaporkan kotor (lebih dari 3 kali dalam sebulan terakhir). Area ini direkomendasikan untuk tindakan pencegahan permanen seperti pemasangan spanduk larangan atau tong sampah baru.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="shrink-0">
+                <a href="{{ route('admin.tps_alarms') }}" class="btn-primary-sm bg-error border-error text-white hover:bg-error-dark hover:border-error-dark transition-colors inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold shadow-sm whitespace-nowrap">
+                    Lihat Detail
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
             </div>
         </div>
     </div>

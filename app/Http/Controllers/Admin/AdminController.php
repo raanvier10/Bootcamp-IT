@@ -21,7 +21,9 @@ class AdminController extends Controller
             ->get();
 
         // FR-AD-12 Alarm Prediksi TPS Liar Baru
-        $reportsLast30Days = \App\Models\Laporan::where('dilaporkan_pada', '>=', now()->subDays(30))->get();
+        $reportsLast30Days = \App\Models\Laporan::where('dilaporkan_pada', '>=', now()->subDays(30))
+            ->where('is_tps_liar_dismissed', false)
+            ->get();
         $tpsLiarAlarms = collect();
         $processedIds = [];
 
@@ -66,6 +68,70 @@ class AdminController extends Controller
         }
 
         return view('admin.dashboard', compact('totalLaporan', 'perluVerifikasi', 'petugasAktif', 'laporanSelesai', 'laporanTerbaru', 'tpsLiarAlarms'));
+    }
+
+    public function tpsAlarms()
+    {
+        $reportsLast30Days = \App\Models\Laporan::where('dilaporkan_pada', '>=', now()->subDays(30))
+            ->where('is_tps_liar_dismissed', false)
+            ->get();
+        $tpsLiarAlarms = collect();
+        $processedIds = [];
+
+        foreach ($reportsLast30Days as $report) {
+            if (in_array($report->id, $processedIds)) continue;
+
+            $nearbyCount = 0;
+            $nearbyReports = [];
+
+            foreach ($reportsLast30Days as $otherReport) {
+                $earthRadius = 6371000;
+                $latFrom = deg2rad((float)$report->lintang);
+                $lonFrom = deg2rad((float)$report->bujur);
+                $latTo = deg2rad((float)$otherReport->lintang);
+                $lonTo = deg2rad((float)$otherReport->bujur);
+
+                $latDelta = $latTo - $latFrom;
+                $lonDelta = $lonTo - $lonFrom;
+
+                $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+                $distance = $angle * $earthRadius;
+
+                if ($distance <= 50) {
+                    $nearbyCount++;
+                    $nearbyReports[] = $otherReport;
+                }
+            }
+
+            if ($nearbyCount >= 3) {
+                $tpsLiarAlarms->push((object)[
+                    'center_report' => $report,
+                    'count' => $nearbyCount,
+                    'reports' => $nearbyReports
+                ]);
+                
+                foreach ($nearbyReports as $nr) {
+                    $processedIds[] = $nr->id;
+                }
+            }
+        }
+
+        return view('admin.tps-alarms', compact('tpsLiarAlarms'));
+    }
+
+    public function dismissTpsAlarm(Request $request)
+    {
+        $request->validate([
+            'report_ids' => 'required|string'
+        ]);
+
+        $ids = explode(',', $request->report_ids);
+        
+        \App\Models\Laporan::whereIn('id', $ids)->update([
+            'is_tps_liar_dismissed' => true
+        ]);
+
+        return back()->with('success', 'Peringatan titik rawan TPS Liar berhasil ditandai sebagai sudah ditangani.');
     }
 
     public function officers(Request $request)
