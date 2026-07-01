@@ -38,7 +38,7 @@
         </div>
 
         {{-- Map --}}
-        <div id="full-map" class="w-full h-[600px] rounded-xl shadow-card-lg overflow-hidden border border-hairline"></div>
+        <div id="full-map" class="relative isolate z-0 w-full h-[600px] rounded-xl shadow-card-lg overflow-hidden border border-hairline"></div>
 
         {{-- Info --}}
         <div class="mt-6 p-4 bg-canvas rounded-lg border border-hairline">

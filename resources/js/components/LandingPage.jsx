@@ -349,8 +349,8 @@ const LandingPage = ({ stats, mapReports, latestArticles, authRoute, mapRoute, a
                         </div>
 
                         <div className="lg:w-2/3 w-full">
-                            <div className="relative w-full h-[500px] rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 border-4 border-white">
-                                <div ref={mapRef} className="w-full h-full z-10 relative"></div>
+                            <div className="relative isolate z-0 w-full h-[500px] rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 border-4 border-white">
+                                <div ref={mapRef} className="w-full h-full"></div>
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#F8F9FA]/40 to-transparent z-20 pointer-events-none"></div>
                             </div>
                         </div>
