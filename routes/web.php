@@ -23,40 +23,32 @@ Route::get('/artikel/{slug}', [GuestController::class, 'articleDetail'])->name('
 Route::get('/kontak', [GuestController::class, 'contact'])->name('contact');
 Route::post('/kontak', [GuestController::class, 'submitContact'])->name('contact.submit');
 
-// Fallback Route untuk melayani gambar (Mencegah 404 di Shared Hosting tanpa Symlink)
+// Fallback Route untuk melayani gambar (Aman dari Path Traversal)
 Route::get('/storage/{path}', function ($path) {
-    $fullPath = storage_path('app/public/' . $path);
-    if (!file_exists($fullPath)) {
+    $basePath = realpath(storage_path('app/public'));
+    $fullPath = realpath(storage_path('app/public/' . $path));
+    
+    if (!$fullPath || !$basePath || !str_starts_with($fullPath, $basePath) || !file_exists($fullPath)) {
         abort(404);
     }
     return response()->file($fullPath);
 })->where('path', '.*');
 
-// Rute Darurat untuk Migrate Database di Shared Hosting
-Route::get('/migrate-database-rahasia', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return 'Migrasi Sukses: ' . \Illuminate\Support\Facades\Artisan::output();
-    } catch (\Exception $e) {
-        return 'Gagal: ' . $e->getMessage();
-    }
-});
-
 // ── Auth (FR-PU-05) ──
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+    
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
 
     // Lupa Password Routes
     Route::get('/lupa-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
-    Route::post('/lupa-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/lupa-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
     Route::get('/verifikasi-otp', [AuthController::class, 'showVerifyOtp'])->name('password.verify.form');
-    Route::post('/verifikasi-otp', [AuthController::class, 'verifyOtp'])->name('password.verify.otp');
+    Route::post('/verifikasi-otp', [AuthController::class, 'verifyOtp'])->name('password.verify.otp')->middleware('throttle:6,1');
     Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
-    Route::post('/reset-password', [AuthController::class, 'processResetPassword'])->name('password.update');
+    Route::post('/reset-password', [AuthController::class, 'processResetPassword'])->name('password.update')->middleware('throttle:6,1');
 });
 
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');

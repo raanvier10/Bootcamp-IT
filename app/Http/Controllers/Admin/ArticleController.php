@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Artikel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -31,7 +32,15 @@ class ArticleController extends Controller
 
         $data = $request->only(['judul', 'isi']);
         $data['penulis_id'] = auth()->id();
-        $data['slug'] = Str::slug($request->judul);
+        
+        $baseSlug = Str::slug($request->judul);
+        $slug = $baseSlug;
+        $counter = 1;
+        while (Artikel::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+        $data['slug'] = $slug;
         
         if ($request->status === 'published') {
             $data['sudah_diterbitkan'] = true;
@@ -69,7 +78,15 @@ class ArticleController extends Controller
         ]);
 
         $data = $request->only(['judul', 'isi']);
-        $data['slug'] = Str::slug($request->judul);
+        
+        $baseSlug = Str::slug($request->judul);
+        $slug = $baseSlug;
+        $counter = 1;
+        while (Artikel::where('slug', $slug)->where('id', '!=', $article->id)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+        $data['slug'] = $slug;
 
         if ($request->status === 'published' && !$article->sudah_diterbitkan) {
             $data['sudah_diterbitkan'] = true;
@@ -84,6 +101,10 @@ class ArticleController extends Controller
         }
 
         if ($request->hasFile('gambar_sampul')) {
+            if ($article->gambar_sampul) {
+                $oldPath = str_replace('/storage/', '', $article->gambar_sampul);
+                Storage::disk('public')->delete($oldPath);
+            }
             $path = $request->file('gambar_sampul')->store('artikel', 'public');
             $data['gambar_sampul'] = '/storage/' . $path;
         }
@@ -96,6 +117,12 @@ class ArticleController extends Controller
     public function destroy($id)
     {
         $article = Artikel::findOrFail($id);
+        
+        if ($article->gambar_sampul) {
+            $oldPath = str_replace('/storage/', '', $article->gambar_sampul);
+            Storage::disk('public')->delete($oldPath);
+        }
+        
         $article->delete();
 
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dihapus.');

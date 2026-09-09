@@ -134,10 +134,13 @@ class TugasController extends Controller
             ], 200);
             
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error in TugasController@verifikasi: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
-                'error_detail' => $e->getTraceAsString()
+                'message' => config('app.debug') ? 'Error: ' . $e->getMessage() : 'Terjadi kesalahan saat memproses tugas.'
             ], 500);
         }
     }

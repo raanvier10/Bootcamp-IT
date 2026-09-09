@@ -139,8 +139,10 @@ class AuthController extends Controller
         $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
             ->where('email', $request->email)->first();
 
-        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
-            return back()->withErrors(['token' => 'Kode OTP salah atau sudah kedaluwarsa.']);
+        $isExpired = $resetRecord ? \Carbon\Carbon::parse($resetRecord->created_at)->addMinutes(15)->isPast() : true;
+
+        if (!$resetRecord || $isExpired || !Hash::check($request->token, $resetRecord->token)) {
+            return back()->withErrors(['token' => 'Kode OTP salah atau sudah kedaluwarsa (berlaku 15 menit).']);
         }
 
         // Simpan sesi untuk allow akses form ganti password
@@ -174,8 +176,10 @@ class AuthController extends Controller
         $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
             ->where('email', $request->email)->first();
 
-        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
-            return redirect()->route('password.request')->withErrors(['email' => 'Sesi reset password tidak valid atau kedaluwarsa.']);
+        $isExpired = $resetRecord ? \Carbon\Carbon::parse($resetRecord->created_at)->addMinutes(15)->isPast() : true;
+
+        if (!$resetRecord || $isExpired || !Hash::check($request->token, $resetRecord->token)) {
+            return redirect()->route('password.request')->withErrors(['email' => 'Sesi reset password tidak valid atau kedaluwarsa. Silakan ulangi.']);
         }
 
         $user = User::where('email', $request->email)->first();

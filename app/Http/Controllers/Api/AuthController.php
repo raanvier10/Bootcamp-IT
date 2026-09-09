@@ -181,10 +181,12 @@ class AuthController extends Controller
         $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
             ->where('email', $request->email)->first();
 
-        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+        $isExpired = $resetRecord ? \Carbon\Carbon::parse($resetRecord->created_at)->addMinutes(15)->isPast() : true;
+
+        if (!$resetRecord || $isExpired || !Hash::check($request->token, $resetRecord->token)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Kode OTP salah atau sudah kedaluwarsa.'
+                'message' => 'Kode OTP salah atau sudah kedaluwarsa (berlaku 15 menit).'
             ], 400);
         }
 
@@ -205,7 +207,9 @@ class AuthController extends Controller
         $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
             ->where('email', $request->email)->first();
 
-        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+        $isExpired = $resetRecord ? \Carbon\Carbon::parse($resetRecord->created_at)->addMinutes(15)->isPast() : true;
+
+        if (!$resetRecord || $isExpired || !Hash::check($request->token, $resetRecord->token)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sesi reset password tidak valid atau kedaluwarsa.'

@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Autentikasi untuk Mobile
-Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
-Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
-Route::post('/forgot-password', [\App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
-Route::post('/verify-otp', [\App\Http\Controllers\Api\AuthController::class, 'verifyOtp']);
-Route::post('/reset-password', [\App\Http\Controllers\Api\AuthController::class, 'resetPassword']);
+// Autentikasi untuk Mobile (dengan rate limiting)
+Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login'])->middleware('throttle:10,1');
+Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'register'])->middleware('throttle:6,1');
+Route::post('/forgot-password', [\App\Http\Controllers\Api\AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+Route::post('/verify-otp', [\App\Http\Controllers\Api\AuthController::class, 'verifyOtp'])->middleware('throttle:6,1');
+Route::post('/reset-password', [\App\Http\Controllers\Api\AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
 
 Route::get('/artikel', [\App\Http\Controllers\Api\ArtikelController::class, 'index']);
 
@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // API Khusus Pelapor
-    Route::prefix('pelapor')->group(function () {
+    Route::prefix('pelapor')->middleware('role:pelapor')->group(function () {
         Route::get('/laporan/publik', [\App\Http\Controllers\Api\LaporanController::class, 'publik']);
         Route::get('/laporan', [\App\Http\Controllers\Api\LaporanController::class, 'index']);
         Route::post('/laporan', [\App\Http\Controllers\Api\LaporanController::class, 'store']);
@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // API Khusus Petugas
-    Route::prefix('petugas')->group(function () {
+    Route::prefix('petugas')->middleware('role:petugas')->group(function () {
         Route::get('/tugas', [\App\Http\Controllers\Api\TugasController::class, 'index']);
         Route::post('/tugas/{id}/verifikasi', [\App\Http\Controllers\Api\TugasController::class, 'verifikasi']);
         
