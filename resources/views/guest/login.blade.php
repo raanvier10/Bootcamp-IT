@@ -11,6 +11,19 @@
             <p class="text-body">Masuk ke akun Anda untuk mengakses sistem TrashReport.</p>
         </div>
         <div class="bg-canvas p-8 rounded-xl shadow-card-lg border border-hairline">
+            @if(session('warning'))
+                <div class="mb-5 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-2.5">
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+                    <span>{{ session('warning') }}</span>
+                </div>
+            @endif
+            @if(session('success'))
+                <div class="mb-5 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-start gap-2.5">
+                    <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('login') }}" class="space-y-5" id="login-form">
                 @csrf
                 <div>

@@ -44,5 +44,18 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sesi kedaluwarsa atau token tidak valid. Silakan refresh halaman.',
+                ], 419);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except('_token', 'password', 'password_confirmation'))
+                ->with('warning', 'Sesi Anda telah diperbarui secara otomatis. Silakan klik Masuk kembali.');
+        });
     }
 }
