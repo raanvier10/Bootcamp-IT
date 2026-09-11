@@ -1,10 +1,10 @@
 @extends('layouts.guest')
 @section('title', 'Verifikasi OTP')
 @section('content')
-<section class="py-16 lg:py-24">
+<section class="pt-4 pb-12 lg:pt-6 lg:pb-16">
     <div class="max-w-md mx-auto px-6">
-        <div class="text-center mb-8">
-            <div class="flex justify-center mb-6">
+        <div class="text-center mb-6">
+            <div class="flex justify-center mb-4">
                 <img src="{{ asset('images/logo.png') }}" alt="TrashReport Logo" class="h-12 w-auto" />
             </div>
             <h1 class="text-2xl font-semibold text-ink tracking-tight mb-2" style="letter-spacing:-0.8px">Verifikasi Kode</h1>
